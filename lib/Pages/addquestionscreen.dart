@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:easyed/Pages/showtaskpage.dart';
 import 'package:easyed/Pages/studentscreen.dart';
@@ -36,15 +37,19 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
       Question(question: "", questionType: "", options: [], id: "");
 
   Teacher teacherdata = Teacher(
-      id: "",
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: "",
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
 
   Task taskdata = Task(
       creator: "",
@@ -52,7 +57,8 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
       subject: "",
       topic: "",
       questions: [],
-      id: "");
+      id: "",
+      v: 0);
 
   // DataModel modeldata =
   //     DataModel(name: "name", job: "job", id: "id", createdAt: DateTime.now());
@@ -112,7 +118,15 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                 // Text(widget.taskid),
                 Text(
                   "ADD NEW QUESTION HERE!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: "Montserrat",
+                    color: Color.fromRGBO(15, 15, 15, 1),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
                 ),
 
                 // GestureDetector(
@@ -168,18 +182,59 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                 Form(
                   key: formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      Text(
+                        "Question",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: question1controller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter Question"),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: 'Enter Question',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Question";
@@ -189,29 +244,60 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                           },
                         ),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: TextFormField(
-                      //     controller: question1typecontroller,
-                      //     decoration: InputDecoration(
-                      //         enabledBorder: OutlineInputBorder(
-                      //           borderSide: BorderSide(
-                      //               width: 3, color: Colors.black), //<-- SEE HERE
-                      //         ),
-                      //         hintText: "Enter question 1 type "),
-                      //   ),
-                      // ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+                      Text(
+                        "Option a",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: answer1acontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter Option a "),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: 'Enter Option a ',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Option a";
@@ -221,17 +307,60 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+                      Text(
+                        "Option b",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: answer1bcontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter Option b "),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: 'Enter Option b ',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Option a";
@@ -241,17 +370,60 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+                      Text(
+                        "Option c",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: answer1ccontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter Option c "),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: 'Enter Option c',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Option c";
@@ -261,17 +433,60 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+                      Text(
+                        "Option d",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: answer1dcontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter Option d "),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: 'Enter Option d ',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Option d";
@@ -281,47 +496,169 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                           },
                         ),
                       ),
+                      SizedBox(
+                        height: 18.54,
+                      ),
 
-                      Container(
-                        width: devicewidth * 0.71,
-                        child: DropdownButtonFormField(
-                          // onTap: () {
-                          //   print(correctanswer);
-                          // },
-                          iconEnabledColor: Color.fromRGBO(153, 153, 153, 1),
-                          iconSize: 35,
-                          items: [
-                            DropdownMenuItem(
-                              child: Text('A'),
-                              value: "A",
-                            ),
-                            DropdownMenuItem(
-                              child: Text('B'),
-                              value: "B",
-                            ),
-                            DropdownMenuItem(
-                              child: Text('C'),
-                              value: "C",
-                            ),
-                            DropdownMenuItem(
-                              child: Text('D'),
-                              value: "D",
-                            ),
-                          ],
-                          decoration:
-                              InputDecoration(hintText: "Enter Correct Option"),
-                          onChanged: (val) {
-                            correctanswer = val;
-                          },
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: question1controller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter Question"),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Question";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      // // Padding(
+                      // //   padding: const EdgeInsets.all(8.0),
+                      // //   child: TextFormField(
+                      // //     controller: question1typecontroller,
+                      // //     decoration: InputDecoration(
+                      // //         enabledBorder: OutlineInputBorder(
+                      // //           borderSide: BorderSide(
+                      // //               width: 3, color: Colors.black), //<-- SEE HERE
+                      // //         ),
+                      // //         hintText: "Enter question 1 type "),
+                      // //   ),
+                      // // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: answer1acontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter Option a "),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Option a";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: answer1bcontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter Option b "),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Option a";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: answer1ccontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter Option c "),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Option c";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: answer1dcontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter Option d "),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Option d";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
 
-                          validator: (val) {
-                            if (val == null) {
-                              return "Please Select Correct Option";
-                            } else {
-                              return null;
-                            }
-                          },
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: devicewidth * 0.71,
+                            child: DropdownButtonFormField(
+                              // onTap: () {
+                              //   print(correctanswer);
+                              // },
+                              iconEnabledColor:
+                                  Color.fromRGBO(153, 153, 153, 1),
+                              iconSize: 35,
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text('A'),
+                                  value: "A",
+                                ),
+                                DropdownMenuItem(
+                                  child: Text('B'),
+                                  value: "B",
+                                ),
+                                DropdownMenuItem(
+                                  child: Text('C'),
+                                  value: "C",
+                                ),
+                                DropdownMenuItem(
+                                  child: Text('D'),
+                                  value: "D",
+                                ),
+                              ],
+                              decoration: InputDecoration(
+                                  hintText: "Enter Correct Option"),
+                              onChanged: (val) {
+                                correctanswer = val;
+                              },
+
+                              validator: (val) {
+                                if (val == null) {
+                                  return "Please Select Correct Option";
+                                } else {
+                                  return null;
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -520,12 +857,12 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.only(top: 50.0),
+                  padding: const EdgeInsets.only(top: 20.0),
                   child: Container(
                     width: 500,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF265AE8),
+                          primary: Color.fromRGBO(86, 103, 253, 1),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30))),
@@ -618,10 +955,15 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
     //   },
     // );
 
+    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+    String? splituserid;
+
+    splituserid = uemailid.split('@')[0];
+
     var response = await http.post(
       Uri.https('api.easyeduverse.tech',
-          '/api/user/${uid}/task/${widget.taskid}/addquestion'),
-      // Uri.httpss('easyed-backend.onrender.com',
+          '/api/user/${splituserid}/task/${widget.taskid}/addquestion'),
+      // Uri.https('easyed-backend.onrender.com',
       //     '/api/teacher/${uid}/task/${widget.taskid}/addquestion'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),

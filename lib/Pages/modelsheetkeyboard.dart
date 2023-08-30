@@ -76,7 +76,7 @@
 //                 focusedBorder: OutlineInputBorder(
 //                   borderSide: BorderSide(
 //                     width: 3,
-//                     color: Color(0xFF265AE8),
+//                     color: Color.fromRGBO(86, 103, 253, 1),
 //                   ),
 //                 ),
 //                 enabledBorder: OutlineInputBorder(
@@ -148,7 +148,7 @@
 //                             focusedBorder: OutlineInputBorder(
 //                               borderSide: BorderSide(
 //                                 width: 3,
-//                                 color: Color(0xFF265AE8),
+//                                 color: Color.fromRGBO(86, 103, 253, 1),
 //                               ),
 //                             ),
 //                             enabledBorder: OutlineInputBorder(
@@ -294,7 +294,7 @@
 //     print(commentid);
 //     print(postid);
 //     var response = await http.delete(
-//       Uri.httpss('easyed-social-media-backend.onrender.com',
+//       Uri.https('easyed-social-media-backend.onrender.com',
 //           '/comment/${postid}/${commentid}'),
 //       headers: {'Content-Type': 'application/json'},
 //       // body: json.encode(sendData),
@@ -312,7 +312,7 @@
 //       required String comment,
 //       required String userid}) async {
 //     var response = await http.post(
-//       Uri.httpss(
+//       Uri.https(
 //           'easyed-social-media-backend.onrender.com', '/comment/${postid}'),
 //       headers: {'Content-Type': 'application/json'},
 //       // body: json.encode(sendData),

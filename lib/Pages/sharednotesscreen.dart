@@ -18,20 +18,35 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:easyed/widgets/widgets.dart';
 
-class NotesScreen extends StatefulWidget {
-  static const routeName = '/notesscreen';
-  const NotesScreen({super.key});
+class SharedNotesScreen extends StatefulWidget {
+  static const routeName = '/SharedNotesScreen';
+  const SharedNotesScreen({super.key});
 
   @override
-  State<NotesScreen> createState() => _NotesScreenState();
+  State<SharedNotesScreen> createState() => _SharedNotesScreenState();
 }
 
-class _NotesScreenState extends State<NotesScreen> {
+class _SharedNotesScreenState extends State<SharedNotesScreen> {
   Future onReturn() async => setState(() => getnotesdata());
   final uid = FirebaseAuth.instance.currentUser!.uid;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   List<Note> noteslist = [];
+
+  List<Sharednote> sharednoteslist = [];
+  Teacher teacherdata = Teacher(
+      id: 'id',
+      commons: [],
+      userDetails: [],
+      educationalDetails: [],
+      tasks: [],
+      notes: [],
+      videoLecture: [],
+      // students: [],
+      v: 1,
+      sharedlectures: [],
+      sharednotes: [],
+      sharedtasks: []);
 
   Note notesdata = Note(
       creator: "",
@@ -116,7 +131,7 @@ class _NotesScreenState extends State<NotesScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // SizedBox(
                         //   width: 29,
@@ -137,7 +152,7 @@ class _NotesScreenState extends State<NotesScreen> {
                         Row(
                           children: [
                             Text(
-                              "Pdf",
+                              "SharedPdf",
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w900,
@@ -153,45 +168,45 @@ class _NotesScreenState extends State<NotesScreen> {
                           ],
                         ),
 
-                        InkWell(
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor:
-                                      Color.fromRGBO(86, 103, 253, 1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  )),
-                              onPressed: () async {
-                                PersistentNavBarNavigator.pushNewScreen(
-                                  context,
-                                  screen: AddPdfScreen(),
-                                  withNavBar:
-                                      true, // OPTIONAL VALUE. True by default.
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.cupertino,
-                                );
+                        // InkWell(
+                        //   child: ElevatedButton(
+                        //       style: ElevatedButton.styleFrom(
+                        //           elevation: 5,
+                        //           backgroundColor:
+                        //               Color.fromRGBO(86, 103, 253, 1),
+                        //           shape: RoundedRectangleBorder(
+                        //             borderRadius: BorderRadius.circular(30),
+                        //           )),
+                        //       onPressed: () async {
+                        //         PersistentNavBarNavigator.pushNewScreen(
+                        //           context,
+                        //           screen: AddPdfScreen(),
+                        //           withNavBar:
+                        //               true, // OPTIONAL VALUE. True by default.
+                        //           pageTransitionAnimation:
+                        //               PageTransitionAnimation.cupertino,
+                        //         );
 
-                                // nextScreen(context, AddPdfScreen());
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "+ ",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Add Notes",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              )),
-                        ),
+                        //         // nextScreen(context, AddPdfScreen());
+                        //       },
+                        //       child: Row(
+                        //         children: [
+                        //           Text(
+                        //             "+ ",
+                        //             style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 24,
+                        //             ),
+                        //           ),
+                        //           Text(
+                        //             "Add Notes",
+                        //             style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontWeight: FontWeight.w600),
+                        //           ),
+                        //         ],
+                        //       )),
+                        // ),
                         // SizedBox(
                         //   width: devicewidth * 0.7,
                         // ),
@@ -284,7 +299,7 @@ class _NotesScreenState extends State<NotesScreen> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             return ListView.builder(
-                              itemCount: noteslist.length,
+                              itemCount: sharednoteslist.length,
                               itemBuilder: (context, index) {
                                 print(noteslist.length);
                                 return buildlistitem(context, index);
@@ -311,7 +326,8 @@ class _NotesScreenState extends State<NotesScreen> {
 
     double devicewidth = MediaQuery.of(context).size.width;
     // Notesbox subjectwidget = subjectBoxlist[index];
-    Note notedata = noteslist[index];
+    Sharednote sharednotedata = sharednoteslist[index];
+    // Note notedata = noteslist[index];
     return GestureDetector(
       onTap: () {
         print(index);
@@ -330,7 +346,7 @@ class _NotesScreenState extends State<NotesScreen> {
               isloading = true;
             });
 
-            final String url = notedata.notesPdfLink;
+            final String url = sharednotedata.notesId!.notesPdfLink;
 
             final file = await PDFApi.loadNetwork(url);
 
@@ -362,7 +378,6 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
               ],
             ),
-
             child: Column(
               children: [
                 SizedBox(
@@ -390,7 +405,7 @@ class _NotesScreenState extends State<NotesScreen> {
                           // color: Colors.red,
                           width: 150.w,
                           child: Text(
-                            notedata.topic,
+                            sharednotedata.notesId!.topic,
                             style: TextStyle(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w600,
@@ -403,7 +418,7 @@ class _NotesScreenState extends State<NotesScreen> {
                           // color: Colors.red,
                           width: 150.w,
                           child: Text(
-                            notedata.subject,
+                            "By: " + sharednotedata.sharedBy,
                             style: TextStyle(
                               fontSize: 10.sp,
                               fontWeight: FontWeight.w400,
@@ -417,16 +432,16 @@ class _NotesScreenState extends State<NotesScreen> {
                     SizedBox(
                       width: 30.w,
                     ),
-                    GestureDetector(
-                      onTap: () async {
-                        _showTextFieldAlertDialog(context, notedata.id);
-                      },
-                      child: Container(
-                        height: 24.44,
-                        width: 22,
-                        child: SvgPicture.asset("assets/shareicon.svg"),
-                      ),
-                    )
+                    // GestureDetector(
+                    //   onTap: () async {
+                    //     _showTextFieldAlertDialog(context, notedata.id);
+                    //   },
+                    //   child: Container(
+                    //     height: 24.44,
+                    //     width: 22,
+                    //     child: SvgPicture.asset("assets/shareicon.svg"),
+                    //   ),
+                    // )
                   ],
                 ),
 
@@ -466,7 +481,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 //                         width: 140,
                 //                         child: SingleChildScrollView(
                 //                           child: Text(
-                //                             notedata.topic,
+                //                             sharednotedata.notesId!.topic,
                 //                             maxLines: 2,
                 //                             style: TextStyle(
                 //                                 fontSize: 13,
@@ -494,7 +509,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 //                       children: [
                 //                         SingleChildScrollView(
                 //                           child: Text(
-                //                             "By: " + notedata.creator,
+                //                             "By: " + sharednotedata.sharedBy,
                 //                             style: TextStyle(
                 //                                 fontWeight: FontWeight.w800,
                 //                                 fontSize: 12),
@@ -506,38 +521,38 @@ class _NotesScreenState extends State<NotesScreen> {
                 //                     width: devicewidth * 0.7.w,
                 //                   ),
                 //                 ),
-                //                 TextButton(
-                //                   onPressed: () async {
-                //                     _showTextFieldAlertDialog(
-                //                         context, notedata.id);
-                //                   },
-                //                   child: Text("Share"),
-                //                 ),
+                //                 // TextButton(
+                //                 //   onPressed: () async {
+                //                 //     _showTextFieldAlertDialog(
+                //                 //         context, notedata.id);
+                //                 //   },
+                //                 //   child: Text("Share"),
+                //                 // ),
                 //               ],
                 //             ),
-                //     ),
-                //     // Padding(
-                //     //   padding: const EdgeInsets.only(left: 2.0, top: 3),
-                //     //   child: Column(
-                //     //     children: [
-                //     //       Container(
-                //     //         // color: Colors.red,
-                //     //         child: SingleChildScrollView(
-                //     //           child: Center(
-                //     //               child: Text(
-                //     //             "By: " + notedata.creator,
-                //     //             style: TextStyle(
-                //     //                 fontWeight: FontWeight.w800, fontSize: 12),
-                //     //           )),
-                //     //         ),
-                //     //         height: 27,
-                //     //         width: 90,
-                //     //       ),
-                //     //     ],
-                //     //   ),
-                //     // ),
-                //   ],
+                //  ),
+                // Padding(
+                //   padding: const EdgeInsets.only(left: 2.0, top: 3),
+                //   child: Column(
+                //     children: [
+                //       Container(
+                //         // color: Colors.red,
+                //         child: SingleChildScrollView(
+                //           child: Center(
+                //               child: Text(
+                //             "By: " + notedata.creator,
+                //             style: TextStyle(
+                //                 fontWeight: FontWeight.w800, fontSize: 12),
+                //           )),
+                //         ),
+                //         height: 27,
+                //         width: 90,
+                //       ),
+                //     ],
+                //   ),
                 // ),
+                //  ],
+                //  ),
               ],
             ),
           ),
@@ -553,136 +568,39 @@ class _NotesScreenState extends State<NotesScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          title: Text(
-            "SHARE",
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Montserrat",
-              color: Color.fromRGBO(99, 109, 119, 1),
-            ),
-          ),
-          // title: Text("Enter Text ${globalteacherdata.id}"),
-
-          // Text(noteid),
-          content: Container(
-            height: 100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Username",
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Montserrat",
-                    color: Color.fromRGBO(99, 109, 119, 1),
-                  ),
-                ),
-                SizedBox(
-                  height: 11.67,
-                ),
-                Container(
-                  width: 316.0.w,
-                  height: 49.14.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(7.45),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(182, 214, 204, 1),
-                        spreadRadius: 2,
-                        blurRadius: 6.r,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                    border: Border.all(
-                      width: 1.0, // 1px border width
-                      color: Color.fromRGBO(182, 214, 204, 1), // Border color
-                    ),
-                  ),
-                  child: TextFormField(
-                    controller: textFieldController,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w200,
-                      fontFamily: "Montserrat",
-                      color: Color.fromRGBO(54, 67, 86, 1),
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10.0),
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w200,
-                        fontFamily: "Montserrat",
-                        color: Color.fromRGBO(54, 67, 86, 1),
-                      ),
-                      hintText: ' @example Bamn',
-                    ),
-                    // validator: (val) {
-                    //   if (val!.length < 1) {
-                    //     return "Please Enter Subject";
-                    //   } else {
-                    //     return null;
-                    //   }
-                    // },
-                  ),
-                ),
-                // TextField(
-                //   controller: textFieldController,
-                //   decoration: InputDecoration(labelText: "@example bamn"),
-                // ),
-              ],
-            ),
+          title: Text("Enter Text ${globalteacherdata.id}"),
+          content: Column(
+            children: [
+              Text(noteid),
+              TextField(
+                controller: textFieldController,
+                decoration: InputDecoration(labelText: "Text"),
+              ),
+            ],
           ),
           actions: <Widget>[
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(86, 103, 253, 1),
-              ),
               onPressed: () async {
                 // Handle the submit button press
                 String enteredText = textFieldController.text;
                 // You can do something with the entered text here
                 print("Entered Text: $enteredText");
 
-                await addshareData(notesid: noteid, sharedwith: enteredText);
-
-                Navigator.of(context).pop();
+                await addshareData(
+                    notesid: noteid,
+                    sharedwith: "Pz8iqku9fOOItWMnrRAsYRDUyy52");
 
                 // Close the alert dialog
                 // Navigator.of(context).pop();
               },
-              child: Text(
-                "Submit",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: "Montserrat",
-                  color: Colors.white,
-                ),
-              ),
+              child: Text("Submit"),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(86, 103, 253, 1),
-              ),
               onPressed: () {
                 // Close the alert dialog without doing anything
                 Navigator.of(context).pop();
               },
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: "Montserrat",
-                  color: Colors.white,
-                ),
-              ),
+              child: Text("Cancel"),
             ),
           ],
         );
@@ -692,12 +610,8 @@ class _NotesScreenState extends State<NotesScreen> {
 
   Future<void> addshareData(
       {required String notesid, required String sharedwith}) async {
-    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
-    String? splituserid;
-
-    splituserid = uemailid.split('@')[0];
     final String url =
-        "https://api.easyeduverse.tech/api/user/${splituserid}/notes/share";
+        "https://api.easyeduverse.tech/api/user/a4hzHBEO2JY3MM8haoldPEQ6j983/notes/share";
 
     // Define the JSON data to be posted
     Map<String, String> jsonData = {
@@ -727,31 +641,38 @@ class _NotesScreenState extends State<NotesScreen> {
     }
   }
 
-  Future<List<Note>> getnotesdata() async {
+  Future<List<Sharednote>> getnotesdata() async {
     final String uemailid = FirebaseAuth.instance.currentUser!.email!;
     String? splituserid;
 
     splituserid = uemailid.split('@')[0];
     final response = await http.get(
-        Uri.parse('https://api.easyeduverse.tech/api/user/$splituserid/notes'));
+        Uri.parse('https://api.easyeduverse.tech/api/user/${splituserid}'));
     // 'https://easyed-backend.onrender.com/api/teacher/$uid/notes'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
+    sharednoteslist = [];
     noteslist = [];
     if (response.statusCode == 200) {
-      for (Map<String, dynamic> index in data) {
-        noteslist.add(Note.fromJson(index));
+      teacherdata = Teacher.fromJson(data);
+
+      print(teacherdata.sharednotes!.length.toString() + "length");
+      for (Sharednote index in teacherdata.sharednotes!) {
+        sharednoteslist.add(index);
       }
+
+      print(sharednoteslist.length.toString() + "length of share");
+
       // teacherslist.add(sampleteachers);
 
       // print(sampleteachers.toString());
       // for (Map<String, dynamic> index in data) {
       //   sampleteachers.add(Teacher.fromJson(index));
       // }
-      return noteslist;
+      return sharednoteslist;
     } else {
-      return noteslist;
+      return sharednoteslist;
     }
   }
 
@@ -778,8 +699,8 @@ class _NotesScreenState extends State<NotesScreen> {
   //   }
   // }
   Future<void> refreshdata() async {
-    await Navigator.push(
-            context, MaterialPageRoute(builder: (context) => NotesScreen()))
+    await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => SharedNotesScreen()))
         .then((value) => onReturn());
   }
 

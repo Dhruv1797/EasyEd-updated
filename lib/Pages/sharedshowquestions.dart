@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,16 +14,18 @@ import 'package:easyed/pdf_api.dart';
 import 'package:easyed/video_player_item.dart';
 import 'package:easyed/widgets/widgets.dart';
 
-class ShowQuestions extends StatefulWidget {
-  static const routeName = '/showquestions';
+class SharedShowQuestions extends StatefulWidget {
+  static const routeName = '/SharedShowQuestions';
   final String taskid;
-  const ShowQuestions({super.key, required this.taskid});
+  final int taskindex;
+  const SharedShowQuestions(
+      {super.key, required this.taskid, required this.taskindex});
 
   @override
-  State<ShowQuestions> createState() => _ShowQuestionsState();
+  State<SharedShowQuestions> createState() => _SharedShowQuestionsState();
 }
 
-class _ShowQuestionsState extends State<ShowQuestions> {
+class _SharedShowQuestionsState extends State<SharedShowQuestions> {
   List _questions = [
     // {
     //   'questionText': 'What\'s your favorite color?',
@@ -52,6 +55,21 @@ class _ShowQuestionsState extends State<ShowQuestions> {
     //   ],
     // },
   ];
+
+  List<Sharedtask> sharedtasklist = [];
+  Teacher taskteacherdata = Teacher(
+      id: 'id',
+      commons: [],
+      userDetails: [],
+      educationalDetails: [],
+      tasks: [],
+      notes: [],
+      videoLecture: [],
+      // students: [],
+      v: 1,
+      sharedlectures: [],
+      sharednotes: [],
+      sharedtasks: []);
 
   Color aselectcolor = Colors.black;
   final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -93,7 +111,8 @@ class _ShowQuestionsState extends State<ShowQuestions> {
       await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ShowQuestions(
+              builder: (context) => SharedShowQuestions(
+                    taskindex: widget.taskindex,
                     taskid: widget.taskid,
                   ))).then((value) => onReturn());
     }
@@ -541,24 +560,35 @@ class _ShowQuestionsState extends State<ShowQuestions> {
     String? splituserid;
 
     splituserid = uemailid.split('@')[0];
-    final response = await http.get(Uri.parse(
-        'https://api.easyeduverse.tech/api/user/${splituserid}/task/${widget.taskid}'));
+    final response = await http.get(
+        Uri.parse('https://api.easyeduverse.tech/api/user/${splituserid}'));
     // 'https://easyed-backend.onrender.com/api/teacher/${uid}/task/${widget.taskid}'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
-
+    sharedtasklist = [];
+    questionslist = [];
     if (response.statusCode == 200) {
       // print(data);
-      sampletask = Task.fromJson(data);
+
+      taskteacherdata = Teacher.fromJson(data);
+      // sampletask = Task.fromJson(data);
       // sampleteachers. = dat;
 
-      questionslist = questionslist = List<Question>.from(sampletask.questions
-          .map((q) => Question(
-              question: q.question,
-              questionType: q.questionType,
-              options: q.options,
-              id: q.id)));
+      print(taskteacherdata.sharednotes!.length.toString() + "length");
+      for (Sharedtask index in taskteacherdata.sharedtasks!) {
+        sharedtasklist.add(index);
+      }
+
+      print(sharedtasklist.length.toString() + "length of share");
+
+      questionslist = questionslist = List<Question>.from(
+          sharedtasklist[widget.taskindex].tasksId!.questions.map((q) =>
+              Question(
+                  question: q.question,
+                  questionType: q.questionType,
+                  options: q.options,
+                  id: q.id)));
 
       print(questionslist[0].toJson());
 

@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:easyed/Pages/globalvariables.dart';
+import 'package:easyed/Pages/sharedshowquestions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:random_string/random_string.dart';
@@ -21,15 +20,15 @@ import 'package:easyed/video_player_item.dart';
 import 'package:easyed/widgets/drawer.dart';
 import 'package:easyed/widgets/widgets.dart';
 
-class ShowTaskPage extends StatefulWidget {
-  static const routeName = '/showtaskpage';
-  const ShowTaskPage({super.key});
+class SharedTaskPage extends StatefulWidget {
+  static const routeName = '/SharedTaskPage';
+  const SharedTaskPage({super.key});
 
   @override
-  State<ShowTaskPage> createState() => _ShowTaskPageState();
+  State<SharedTaskPage> createState() => _SharedTaskPageState();
 }
 
-class _ShowTaskPageState extends State<ShowTaskPage> {
+class _SharedTaskPageState extends State<SharedTaskPage> {
   final String taskid = randomNumeric(24);
   List _questions = [
     // {
@@ -61,16 +60,31 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
     // },
   ];
 
+  List<Sharedtask> sharedtasklist = [];
+  Teacher taskteacherdata = Teacher(
+      id: 'id',
+      commons: [],
+      userDetails: [],
+      educationalDetails: [],
+      tasks: [],
+      notes: [],
+      videoLecture: [],
+      // students: [],
+      v: 1,
+      sharedlectures: [],
+      sharednotes: [],
+      sharedtasks: []);
+
   Color aselectcolor = Colors.black;
   final uid = FirebaseAuth.instance.currentUser!.uid;
   List<Student> samplestudents = [];
   List<Teacher> teacherslist = [];
-  List<Task> taskslist = [];
+  // List<Task> taskslist = [];
   int count = -1;
 
   Future<void> refreshdata() async {
     await Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ShowTaskPage()))
+            context, MaterialPageRoute(builder: (context) => SharedTaskPage()))
         .then((value) => onReturn());
   }
 
@@ -131,7 +145,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // SizedBox(
                         //   width: 29,
@@ -152,7 +166,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                         Row(
                           children: [
                             Text(
-                              "ED",
+                              "Shared",
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w900,
@@ -168,45 +182,45 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                           ],
                         ),
 
-                        InkWell(
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor:
-                                      Color.fromRGBO(86, 103, 253, 1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  )),
-                              onPressed: () async {
-                                PersistentNavBarNavigator.pushNewScreen(
-                                  context,
-                                  screen: TaskPostScreen(
-                                    taskid: taskid,
-                                  ),
-                                  withNavBar: true,
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.cupertino,
-                                );
-                                // nextScreen(context, AddPdfScreen());
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "+ ",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Add Tasks",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              )),
-                        ),
+                        // InkWell(
+                        //   child: ElevatedButton(
+                        //       style: ElevatedButton.styleFrom(
+                        //           elevation: 5,
+                        //           backgroundColor:
+                        //               Color.fromRGBO(86, 103, 253, 1),
+                        //           shape: RoundedRectangleBorder(
+                        //             borderRadius: BorderRadius.circular(30),
+                        //           )),
+                        //       onPressed: () async {
+                        //         PersistentNavBarNavigator.pushNewScreen(
+                        //           context,
+                        //           screen: TaskPostScreen(
+                        //             taskid: taskid,
+                        //           ),
+                        //           withNavBar: true,
+                        //           pageTransitionAnimation:
+                        //               PageTransitionAnimation.cupertino,
+                        //         );
+                        //         // nextScreen(context, AddPdfScreen());
+                        //       },
+                        //       child: Row(
+                        //         children: [
+                        //           Text(
+                        //             "+ ",
+                        //             style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 24,
+                        //             ),
+                        //           ),
+                        //           Text(
+                        //             "Add Tasks",
+                        //             style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontWeight: FontWeight.w600),
+                        //           ),
+                        //         ],
+                        //       )),
+                        // ),
                         // SizedBox(
                         //   width: devicewidth * 0.7,
                         // ),
@@ -283,7 +297,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
                                   return ListView.builder(
-                                      itemCount: taskslist.length,
+                                      itemCount: sharedtasklist.length,
                                       itemBuilder: (context, index) {
                                         // if (count < taskslist.length) {
                                         //   count++;
@@ -344,8 +358,12 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                                                 PersistentNavBarNavigator
                                                     .pushNewScreen(
                                                   context,
-                                                  screen: ShowQuestions(
-                                                    taskid: taskslist[index].id,
+                                                  screen: SharedShowQuestions(
+                                                    taskindex: index,
+                                                    taskid:
+                                                        sharedtasklist[index]
+                                                            .tasksId!
+                                                            .id,
                                                   ),
                                                   withNavBar:
                                                       true, // OPTIONAL VALUE. True by default.
@@ -361,7 +379,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                                                 //     ));
                                               },
                                               child: Container(
-                                                width: 500.w,
+                                                width: 500,
                                                 decoration: BoxDecoration(
                                                   // color: Colors.red,
                                                   color: Color.fromRGBO(
@@ -392,10 +410,9 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                                                     ),
                                                   ],
                                                 ),
-                                                height: 100.h,
+                                                // color: Colors.red,
+                                                height: 100,
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
                                                   children: [
                                                     Padding(
                                                       padding:
@@ -412,135 +429,121 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                                                             "assets/quiz.png"),
                                                       ),
                                                     ),
-                                                    SingleChildScrollView(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Creator: ",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700),
-                                                              ),
-                                                              Container(
-                                                                width: 110,
-                                                                // color: Colors
-                                                                //     .red,
-                                                                child: Text(
-                                                                  taskslist[
-                                                                          index]
-                                                                      .creator,
-                                                                  maxLines: 2,
+                                                    Expanded(
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Sharedby: ",
                                                                   style: TextStyle(
-                                                                      color: Color
-                                                                          .fromRGBO(
-                                                                              38,
-                                                                              90,
-                                                                              232,
-                                                                              1),
                                                                       fontSize:
                                                                           15,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w700),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Class: ",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700),
-                                                              ),
-                                                              Container(
-                                                                // color: Colors
-                                                                // .red,
-                                                                width: 110,
-                                                                child: Text(
-                                                                  taskslist[
-                                                                          index]
-                                                                      .taskClass,
-                                                                  maxLines: 2,
+                                                                Container(
+                                                                  width: 140,
+                                                                  // color: Colors
+                                                                  //     .red,
+                                                                  child: Text(
+                                                                    sharedtasklist[
+                                                                            index]
+                                                                        .tasksId!
+                                                                        .creator,
+                                                                    maxLines: 2,
+                                                                    style: TextStyle(
+                                                                        color: Color.fromRGBO(
+                                                                            38,
+                                                                            90,
+                                                                            232,
+                                                                            1),
+                                                                        fontSize:
+                                                                            15,
+                                                                        fontWeight:
+                                                                            FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Class: ",
                                                                   style: TextStyle(
-                                                                      color: Color
-                                                                          .fromRGBO(
-                                                                              38,
-                                                                              90,
-                                                                              232,
-                                                                              1),
                                                                       fontSize:
                                                                           15,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w700),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Subject: ",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700),
-                                                              ),
-                                                              Container(
-                                                                width: 110,
-                                                                child: Text(
-                                                                  taskslist[
-                                                                          index]
-                                                                      .subject,
-                                                                  maxLines: 2,
+                                                                Container(
+                                                                  width: 140,
+                                                                  child: Text(
+                                                                    sharedtasklist[
+                                                                            index]
+                                                                        .tasksId!
+                                                                        .taskClass,
+                                                                    maxLines: 2,
+                                                                    style: TextStyle(
+                                                                        color: Color.fromRGBO(
+                                                                            38,
+                                                                            90,
+                                                                            232,
+                                                                            1),
+                                                                        fontSize:
+                                                                            15,
+                                                                        fontWeight:
+                                                                            FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Text(
+                                                                  "Subject: ",
                                                                   style: TextStyle(
-                                                                      color: Color
-                                                                          .fromRGBO(
-                                                                              38,
-                                                                              90,
-                                                                              232,
-                                                                              1),
                                                                       fontSize:
                                                                           15,
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w700),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          // Text(taskslist[index].id),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    GestureDetector(
-                                                      onTap: () async {
-                                                        _showTextFieldAlertDialog(
-                                                            context,
-                                                            taskslist[index]
-                                                                .id);
-                                                      },
-                                                      child: Container(
-                                                        child: SvgPicture.asset(
-                                                            "assets/shareicon.svg"),
+                                                                Container(
+                                                                  width: 140,
+                                                                  child: Text(
+                                                                    sharedtasklist[
+                                                                            index]
+                                                                        .tasksId!
+                                                                        .subject,
+                                                                    maxLines: 2,
+                                                                    style: TextStyle(
+                                                                        color: Color.fromRGBO(
+                                                                            38,
+                                                                            90,
+                                                                            232,
+                                                                            1),
+                                                                        fontSize:
+                                                                            15,
+                                                                        fontWeight:
+                                                                            FontWeight.w700),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            // Text(taskslist[index].id),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -675,93 +678,18 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          title: Text(
-            "SHARE",
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Montserrat",
-              color: Color.fromRGBO(99, 109, 119, 1),
-            ),
-          ),
-          content: Container(
-            height: 100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Username",
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Montserrat",
-                    color: Color.fromRGBO(99, 109, 119, 1),
-                  ),
-                ),
-                SizedBox(
-                  height: 11.67,
-                ),
-                Container(
-                  width: 316.0.w,
-                  height: 49.14.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(7.45),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(182, 214, 204, 1),
-                        spreadRadius: 2,
-                        blurRadius: 6.r,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                    border: Border.all(
-                      width: 1.0, // 1px border width
-                      color: Color.fromRGBO(182, 214, 204, 1), // Border color
-                    ),
-                  ),
-                  child: TextFormField(
-                    controller: textFieldController,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w200,
-                      fontFamily: "Montserrat",
-                      color: Color.fromRGBO(54, 67, 86, 1),
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10.0),
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w200,
-                        fontFamily: "Montserrat",
-                        color: Color.fromRGBO(54, 67, 86, 1),
-                      ),
-                      hintText: ' @example Bamn',
-                    ),
-                    // validator: (val) {
-                    //   if (val!.length < 1) {
-                    //     return "Please Enter Subject";
-                    //   } else {
-                    //     return null;
-                    //   }
-                    // },
-                  ),
-                ),
-                // TextField(
-                //   controller: textFieldController,
-                //   decoration: InputDecoration(labelText: "@example bamn"),
-                // ),
-              ],
-            ),
+          title: Text("Enter Text ${globalteacherdata.id}"),
+          content: Column(
+            children: [
+              Text(taskid),
+              TextField(
+                controller: textFieldController,
+                decoration: InputDecoration(labelText: "Text"),
+              ),
+            ],
           ),
           actions: <Widget>[
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(86, 103, 253, 1),
-              ),
               onPressed: () async {
                 // Handle the submit button press
                 String enteredText = textFieldController.text;
@@ -770,38 +698,17 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
 
                 await addshareData(taskid: taskid, sharedwith: enteredText);
 
-                Navigator.of(context).pop();
-
                 // Close the alert dialog
                 // Navigator.of(context).pop();
               },
-              child: Text(
-                "Submit",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: "Montserrat",
-                  color: Colors.white,
-                ),
-              ),
+              child: Text("Submit"),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(86, 103, 253, 1),
-              ),
               onPressed: () {
                 // Close the alert dialog without doing anything
                 Navigator.of(context).pop();
               },
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: "Montserrat",
-                  color: Colors.white,
-                ),
-              ),
+              child: Text("Cancel"),
             ),
           ],
         );
@@ -861,25 +768,32 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
     }
   }
 
-  Future<List<Task>> gettaskdata() async {
+  Future<List<Sharedtask>> gettaskdata() async {
     final String uemailid = FirebaseAuth.instance.currentUser!.email!;
     String? splituserid;
 
     splituserid = uemailid.split('@')[0];
-    final response = await http.get(Uri.parse(
-        'https://api.easyeduverse.tech/api/user/${splituserid}/task'));
+    final response = await http.get(
+        Uri.parse('https://api.easyeduverse.tech/api/user/${splituserid}'));
     // 'https://easyed-backend.onrender.com/api/teacher/${uid}/task'));
     var data = jsonDecode(response.body.toString());
 
-    taskslist = [];
+    sharedtasklist = [];
+    // taskslist = [];
 
     if (response.statusCode == 200) {
-      for (Map<String, dynamic> index in data) {
-        taskslist.add(Task.fromJson(index));
+      taskteacherdata = Teacher.fromJson(data);
+
+      print(taskteacherdata.sharednotes!.length.toString() + "length");
+      for (Sharedtask index in taskteacherdata.sharedtasks!) {
+        sharedtasklist.add(index);
       }
-      return taskslist;
+
+      print(sharedtasklist.length.toString() + "length of share");
+
+      return sharedtasklist;
     } else {
-      return taskslist;
+      return sharedtasklist;
     }
   }
 

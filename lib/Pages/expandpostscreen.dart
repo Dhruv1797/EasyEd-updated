@@ -40,6 +40,10 @@ class _ExpandPOstSState extends State<ExpandPOstS> {
             // Text(widget.iscurrentindexpostisavideo.toString() +
             //     widget.index.toString()),
 
+            SizedBox(
+              height: 50.h,
+            ),
+
             widget.iscurrentposttextonly
                 ? SizedBox()
                 : Container(
@@ -60,7 +64,7 @@ class _ExpandPOstSState extends State<ExpandPOstS> {
                                   width: 600,
                                   child: Center(
                                       child: CircularProgressIndicator(
-                                    color: Color.fromRGBO(38, 90, 232, 1),
+                                    color: Color.fromRGBO(86, 103, 253, 1),
                                   ))),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
@@ -75,7 +79,7 @@ class _ExpandPOstSState extends State<ExpandPOstS> {
                 Padding(
                   padding: widget.iscurrentposttextonly
                       ? EdgeInsets.only(
-                          top: 24.0.h,
+                          top: 14.0.h,
                           bottom: 14.0.h,
                           left: 14.0.w,
                           right: 14.0.w)
@@ -85,9 +89,10 @@ class _ExpandPOstSState extends State<ExpandPOstS> {
                           left: 14.0.w,
                           right: 14.0.w),
                   child: Container(
+                    // color: Colors.red,
                     height: widget.iscurrentposttextonly
-                        ? deviceheight * 0.884
-                        : deviceheight * 0.518,
+                        ? deviceheight * 0.83
+                        : deviceheight * 0.458,
                     // color: Colors.red,
                     width: devicewidth * 0.9,
                     child: SingleChildScrollView(
@@ -104,7 +109,7 @@ class _ExpandPOstSState extends State<ExpandPOstS> {
                         widget.decriptions,
                         maxLines: null,
                         style: TextStyle(
-                            color: Colors.black54,
+                            color: Colors.black,
                             fontFamily: 'Poppins',
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w600),

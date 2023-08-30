@@ -44,6 +44,7 @@ dependencies:
   flutter_pdfview: ^1.3.1
   flutter_screenutil: ^5.8.4
   flutter_svg: ^2.0.7
+  google_mobile_ads: ^3.0.0
   http: ^1.1.0
   image_picker: ^1.0.1
   insta_image_viewer: ^1.0.2
@@ -102,7 +103,12 @@ flutter:
     - family: Montserrat
       fonts:
         - asset: assets/fonts/Montserrat-Regular-400.ttf
-        # - asset: fonts/Schyler-Italic.ttf
+          # - asset: fonts/Schyler-Italic.ttf
+          # style: italic
+    - family: Exo
+      fonts:
+        - asset: assets/fonts/Exo-Regular.ttf
+          # - asset: fonts/Schyler-Italic.ttf
           # style: italic
     - family: Poppins
       fonts:
@@ -110,6 +116,5 @@ flutter:
         - asset: assets/fonts/Poppins-SemiBold.ttf
         - asset: assets/fonts/Poppins-Italic.ttf
           weight: 700
-  #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -193,7 +193,7 @@ class _NOtificationScreenState extends State<NOtificationScreen> {
                       width: 24,
                       child: Image.asset(
                         "assets/likes.png",
-                        color: Color.fromRGBO(38, 90, 232, 1),
+                        color: Color.fromRGBO(86, 103, 253, 1),
                       ))
                 ],
               ),

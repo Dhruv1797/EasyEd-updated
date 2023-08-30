@@ -24,15 +24,19 @@ class _TestPageState extends State<TestPage> {
 
   // List<Student> sampleteachers = [];
   Teacher sampleteachers = Teacher(
-      id: 'id',
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: 'id',
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
   @override
   Widget build(BuildContext context) {
     return Scaffold(

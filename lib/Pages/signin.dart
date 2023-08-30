@@ -80,7 +80,7 @@ class SignIn extends StatelessWidget {
                       width: 360,
                       height: 282,
                       decoration: ShapeDecoration(
-                        color: Color(0xFF265AE8),
+                        color: Color.fromRGBO(86, 103, 253, 1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(42),
                         ),
@@ -217,7 +217,7 @@ class SignIn extends StatelessWidget {
                       width: 298,
                       height: 50,
                       decoration: ShapeDecoration(
-                        color: Color(0xFF265AE8),
+                        color: Color.fromRGBO(86, 103, 253, 1),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(7)),
                         shadows: [
@@ -293,7 +293,7 @@ class SignIn extends StatelessWidget {
                         'Forgot Password',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Color(0xFF265AE8),
+                          color: Color.fromRGBO(86, 103, 253, 1),
                           fontSize: 12,
                           fontFamily: 'Montserrat',
                           fontWeight: FontWeight.w400,
@@ -406,7 +406,7 @@ class SignIn extends StatelessWidget {
                             TextSpan(
                               text: 'Sign up',
                               style: TextStyle(
-                                color: Color(0xFF265AE8),
+                                color: Color.fromRGBO(86, 103, 253, 1),
                                 fontSize: 12,
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.w400,

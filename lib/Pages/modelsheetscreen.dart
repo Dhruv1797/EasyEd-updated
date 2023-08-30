@@ -343,7 +343,7 @@ class _ModelSheetScreenState extends State<ModelSheetScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         width: 3,
-                        color: Color(0xFF265AE8),
+                        color: Color.fromRGBO(86, 103, 253, 1),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -434,7 +434,7 @@ class _ModelSheetScreenState extends State<ModelSheetScreen> {
       required String comment,
       required String userid}) async {
     var response = await http.post(
-      Uri.https('social.easyeduverse.tech', '/comment/${postid}'),
+      Uri.https('api.easyeduverse.tech', '/comment/${postid}'),
       // Uri.https(
       //     'easyed-social-media-backend.onrender.com', '/comment/${postid}'),
       headers: {'Content-Type': 'application/json'},
@@ -455,7 +455,7 @@ class _ModelSheetScreenState extends State<ModelSheetScreen> {
 
   Future<Post> getpostdata() async {
     final response = await http.get(Uri.parse(
-        'https://social.easyeduverse.tech/api/post?page=${widget.pagenumber}'));
+        'https://api.easyeduverse.tech/api/post?page=${widget.pagenumber}'));
     // Uri.parse('https://easyed-social-media-backend.onrender.com/api/post'));
     var data = jsonDecode(response.body.toString());
 
@@ -485,7 +485,7 @@ class _ModelSheetScreenState extends State<ModelSheetScreen> {
     print(commentid);
     print(postid);
     var response = await http.delete(
-      Uri.https('social.easyeduverse.tech', '/comment/${postid}/${commentid}'),
+      Uri.https('api.easyeduverse.tech', '/comment/${postid}/${commentid}'),
       // Uri.https('easyed-social-media-backend.onrender.com',
       //     '/comment/${postid}/${commentid}'),
       headers: {'Content-Type': 'application/json'},

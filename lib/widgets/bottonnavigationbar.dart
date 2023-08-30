@@ -86,7 +86,7 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
         screens: _NavScreens(),
         items: _navBarsItems(),
         confineInSafeArea: true,
-        backgroundColor: Color.fromRGBO(38, 90, 232, 1),
+        backgroundColor: Color.fromRGBO(86, 103, 253, 1),
         handleAndroidBackButtonPress: true,
         resizeToAvoidBottomInset: true,
         hideNavigationBarWhenKeyboardShows: true,

@@ -53,7 +53,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   bool isloading = false;
   bool isloadingsubmit = false;
   VideoLecture lecturedata = VideoLecture(
-      subject: "", topic: "", videoLink: "", videoTitle: "", id: "");
+      subject: "", topic: "", videoLink: "", videoTitle: "", id: "", v: 0);
   List<Teacher> teacherslist = [];
 
   bool isimageloading = false;
@@ -67,8 +67,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
       tasks: [],
       notes: [],
       videoLecture: [],
-      students: [],
-      v: 1);
+      // students: [],
+      v: 1,
+      sharedlectures: [],
+      sharednotes: [],
+      sharedtasks: []);
 
   // Post postdata = Post(
   //     id: '',
@@ -337,35 +340,60 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                   padding: const EdgeInsets.only(top: 24.0),
                                   child: Form(
                                     key: formKey,
-                                    child: TextFormField(
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: 'Poppins'),
-                                      minLines: 15,
-                                      maxLines: 20,
-                                      keyboardType: TextInputType.multiline,
-                                      controller: contentcontroller,
-                                      decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              width: 3,
-                                              color: Color(0xFF265AE8),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        // color: Colors.red,
+                                        color: Color.fromRGBO(255, 255, 255, 1),
+                                        border: Border.all(
+                                          color:
+                                              Color.fromRGBO(182, 214, 204, 1),
+                                        ),
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10),
+                                            bottomLeft: Radius.circular(10),
+                                            bottomRight: Radius.circular(10)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Color.fromRGBO(
+                                                182, 214, 204, 1),
+                                            blurRadius: 6.0,
+                                            offset: Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+                                      child: TextFormField(
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: 'Poppins'),
+                                        minLines: 15,
+                                        maxLines: 20,
+                                        keyboardType: TextInputType.multiline,
+                                        controller: contentcontroller,
+                                        decoration: InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color.fromRGBO(
+                                                    182, 214, 204, 1),
+                                              ), //<-- SEE HERE
                                             ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              width: 3,
-                                              color: Colors.black,
-                                            ), //<-- SEE HERE
-                                          ),
-                                          hintText: "Enter content.."),
-                                      validator: (val) {
-                                        if (val!.length < 1) {
-                                          return "Please Enter Content";
-                                        } else {
-                                          return null;
-                                        }
-                                      },
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color.fromRGBO(
+                                                    182, 214, 204, 1),
+                                              ), //<-- SEE HERE
+                                            ),
+                                            hintText: "Enter content.."),
+                                        validator: (val) {
+                                          if (val!.length < 1) {
+                                            return "Please Enter Content";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -528,7 +556,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                   padding: const EdgeInsets.only(top: 17.0),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                        primary: Color(0xFF265AE8),
+                                        primary:
+                                            Color.fromRGBO(86, 103, 253, 1),
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -1040,7 +1069,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       });
 
       Response response = await Dio()
-          .post("https://social.easyeduverse.tech/api/post", data: formdata);
+          .post("https://api.easyeduverse.tech/api/post", data: formdata);
 
       print("File upload response: $response");
       _showSnackBarMsg(response.data['message']);
@@ -1112,7 +1141,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       });
 
       Response response = await Dio()
-          .post("https://social.easyeduverse.tech/api/post", data: formdata);
+          .post("https://api.easyeduverse.tech/api/post", data: formdata);
 
       print("File upload response: $response");
       _showSnackBarMsg(response.data['message']);
@@ -1157,12 +1186,17 @@ class _AddPostScreenState extends State<AddPostScreen> {
     //   return taskdata;
     // } else {
     //   return taskdata;
-    // }comments
+    // }
   }
 
   Future<Teacher> getTeacherdata() async {
-    final response = await http
-        .get(Uri.parse('https://api.easyeduverse.tech/api/user/${uid}'));
+    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+    String? splituserid;
+
+    splituserid = uemailid.split('@')[0];
+
+    final response = await http.get(
+        Uri.parse('https://api.easyeduverse.tech/api/user/${splituserid}'));
     // Uri.parse('https://easyed-backend.onrender.com/api/teacher/${uid}'));
     var data = jsonDecode(response.body.toString());
 
@@ -1195,7 +1229,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       // required String id,
       required String uid}) async {
     String filename = basename(filepath!.path);
-    String url = "https://social.easyeduverse.tech/api/post";
+    String url = "https://api.easyeduverse.tech/api/post";
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
@@ -1296,7 +1330,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       // required String id,
       required String uid}) async {
     // String filename = basename(filepath!.path);
-    String url = "https://social.easyeduverse.tech/api/post";
+    String url = "https://api.easyeduverse.tech/api/post";
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
 

@@ -1,6 +1,7 @@
 // import 'package:cached_video_player/cached_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerItem extends StatefulWidget {
@@ -39,8 +40,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     chewieController = ChewieController(
       placeholder: Container(
           color: Colors.black,
-          height: 300,
-          width: 600,
+          height: 800.h,
+          width: 600.w,
           child: Center(
               child: CircularProgressIndicator(
             color: Color.fromRGBO(208, 56, 193, 1),
@@ -63,6 +64,10 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceheight = MediaQuery.of(context).size.height;
+    double appbarheight = 45;
+
+    double devicewidth = MediaQuery.of(context).size.width;
     return Container(
       height: 300,
       width: 600,

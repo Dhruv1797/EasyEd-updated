@@ -1,4 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:easyed/Pages/banneradstest.dart';
+import 'package:easyed/Pages/sharednotesscreen.dart';
+import 'package:easyed/Pages/startingscreen.dart';
 import 'package:easyed/Pages/verify_page.dart';
 import 'package:flutter/material.dart';
 import 'package:easyed/Pages/addVideoScreen.dart';
@@ -30,7 +33,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:easyed/auth/register_page.dart';
 import 'package:easyed/helper/helper_function.dart';
 import 'dart:io';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 // class MyHttpOverrides extends HttpOverrides {
 //   @override
 //   HttpClient createHttpClient(SecurityContext? context) {
@@ -41,8 +47,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 // }
 
 void main() async {
+  // var devices = ["06D8B28D2D8B440C412BD32C919BBAE9"];
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
+
+  await MobileAds.instance.initialize();
+
+  // RequestConfiguration requestConfiguration =
+  //     RequestConfiguration(testDeviceIds: devices);
+  // MobileAds.instance.updateRequestConfiguration(requestConfiguration);
+
   // HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
@@ -123,17 +138,20 @@ class _MyAppState extends State<MyApp> {
                   ),
                   // home: ShowPostScreen(),
                   // home: LoginPage(),
+                  // home: Banneradstest(),
+
                   home: AnimatedSplashScreen(
                     splash: Image.asset('assets/easyedblack.png'),
                     splashIconSize: 200,
                     splashTransition: SplashTransition.fadeTransition,
                     backgroundColor: Colors.white,
                     duration: 500,
+                    // nextScreen: SharedNotesScreen(),
                     nextScreen: _isSignedIn
                         ? isshow
                             ? StudentScreen()
                             : Verifypage()
-                        : LoginPage(),
+                        : StartingScreen(),
                   ),
 
                   routes: {

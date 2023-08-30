@@ -8,6 +8,7 @@ import 'package:easyed/Pages/expandpostscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:easyed/Pages/addpostscreen.dart';
@@ -47,7 +48,10 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
   bool isalreadyunliked = false;
   bool isloading = false;
 
+  int adInterval = 5;
+
   List<PostElement> postelementlist = [];
+  List<Object> postelementlistads = [];
 
   Future onReturn() async => setState(() => getpostdata());
   TextEditingController commentcontroller = TextEditingController();
@@ -72,15 +76,19 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
   Post postdata = Post(posts: [], currentPage: 0, totalPages: 0, totalCount: 0);
   // List<Student> sampleteachers = [];
   Teacher sampleteachers = Teacher(
-      id: 'id',
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: 'id',
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
 
   StreamController<Post> poststreeamcontroller = StreamController();
 
@@ -89,9 +97,33 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
     // refreshdata();
     // TODO: implement initState
     super.initState();
+    initBannerAD();
     getpostdata();
 
     scrollcontroller.addListener(scrolllistener);
+  }
+
+  late BannerAd bannerAd;
+  bool isAdloaded = false;
+  initBannerAD() {
+    bannerAd = BannerAd(
+      size: AdSize.largeBanner,
+      adUnitId: "ca-app-pub-5815010106350331/1285255064",
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            isAdloaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          print(error);
+        },
+      ),
+      request: const AdRequest(),
+    );
+
+    bannerAd.load();
   }
 
   @override
@@ -156,7 +188,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                               "ED",
                               style: TextStyle(
                                   fontFamily: 'Poppins',
-                                  color: Color.fromRGBO(38, 90, 232, 1),
+                                  color: Color.fromRGBO(86, 103, 253, 1),
                                   fontWeight: FontWeight.w900,
                                   fontSize: 30),
                             ),
@@ -170,7 +202,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                 style: ElevatedButton.styleFrom(
                                     elevation: 5,
                                     backgroundColor:
-                                        Color.fromRGBO(38, 90, 232, 1),
+                                        Color.fromRGBO(86, 103, 253, 1),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(30),
                                     )),
@@ -187,12 +219,12 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                   // nextScreen(context, AddPostScreen());
                                 },
                                 child: Text(
-                                  "Add Questions",
+                                  "Post/Ask",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     fontFamily: 'Poppins',
                                     color: Colors.white,
-                                    fontSize: 9.sp,
+                                    fontSize: 11.sp,
                                   ),
                                 )),
                           ),
@@ -204,20 +236,70 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                 Container(
                   // color: Colors.red,
                   height: deviceheight * 0.82,
-                  child: RefreshIndicator(
-                    onRefresh: () async {
-                      refreshdata();
-                    },
-                    child: ListView.builder(
-                        controller: scrollcontroller,
-                        itemCount: postelementlist.length,
-                        itemBuilder: (context, index) {
+                  child: ListView.builder(
+                      controller: scrollcontroller,
+                      itemCount: postelementlist.length +
+                          (postelementlist.length ~/ adInterval),
+                      // itemCount: postelementlist.length,
+                      itemBuilder: (context, index) {
+                        // NativeAd nativeAd = NativeAd(
+                        //   adUnitId: 'ca-app-pub-3940256099942544/2247696110',
+                        //   nativeTemplateStyle: NativeTemplateStyle(
+                        //     templateType: TemplateType.medium,
+                        //   ),
+                        //   request: AdRequest(),
+                        //   listener: NativeAdListener(
+                        //     onAdLoaded: (Ad ad) {
+                        //       print("Ad Loaded");
+                        //     },
+                        //     onAdFailedToLoad: (Ad ad, LoadAdError error) {
+                        //       print("Ad failed to load");
+                        //       ad.dispose();
+                        //     },
+                        //     onAdOpened: (Ad ad) {
+                        //       print("Ad Loaded");
+                        //     },
+                        //   ),
+                        // );
+
+                        BannerAd bAd = BannerAd(
+                          size: AdSize.fullBanner,
+                          adUnitId: 'ca-app-pub-5815010106350331/1285255064',
+                          listener: BannerAdListener(
+                            onAdLoaded: (Ad ad) {
+                              print("Ad Loaded");
+                            },
+                            onAdFailedToLoad: (Ad ad, LoadAdError error) {
+                              print("Ad failed to load");
+                              ad.dispose();
+                            },
+                            onAdOpened: (Ad ad) {
+                              print("Ad Loaded");
+                            },
+                          ),
+                          request: AdRequest(),
+                        );
+
+                        if (index % (adInterval + 1) == adInterval) {
+                          return isAdloaded
+                              ? SizedBox(
+                                  height: bAd.size.height.toDouble(),
+                                  width: bAd.size.width.toDouble(),
+                                  child: AdWidget(
+                                    ad: bAd..load(),
+                                    key: ValueKey<String>('ad_$index'),
+                                  ),
+                                )
+                              : SizedBox();
+                        } else {
+                          int itemIndex = index - (index ~/ (adInterval + 1));
+
                           bool iscurrentindexpostalreadylikedbyuser =
-                              postelementlist[index]
+                              postelementlist[itemIndex]
                                   .likes
                                   .any((element) => element.user == uid);
 
-                          if (postelementlist[index].postFormat != null) {
+                          if (postelementlist[itemIndex].postFormat != null) {
                             // if (postlist[index]
                             //         .postFormat!
                             //         .contains("video") ||
@@ -226,23 +308,24 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                             //         .contains("application")) {
                             //   iscurrentindexpostisavideo = true;
 
-                            iscurrentpostistextonly = postelementlist[index]
+                            iscurrentpostistextonly = postelementlist[itemIndex]
                                 .postFormat!
                                 .contains("null");
                             // }
-                            iscurrentindexpostisavideo = postelementlist[index]
-                                    .postFormat!
-                                    .contains("video") ||
-                                postelementlist[index]
-                                    .postFormat!
-                                    .contains("application");
+                            iscurrentindexpostisavideo =
+                                postelementlist[itemIndex]
+                                        .postFormat!
+                                        .contains("video") ||
+                                    postelementlist[itemIndex]
+                                        .postFormat!
+                                        .contains("application");
                             // iscurrentindexpostisavideo = postlist[index]
                             //     .postFormat!
                             //     .contains("application");
                           }
 
                           commentlist = commentlist = List<Comment>.from(
-                            postelementlist[index].comments.map(
+                            postelementlist[itemIndex].comments.map(
                                   (q) => Comment(
                                       user: q.user,
                                       comment: q.comment,
@@ -254,25 +337,26 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
 
                           return GestureDetector(
                             onTap: () {
-                              print(index);
+                              print(itemIndex);
                               print(iscurrentindexpostisavideo);
                               nextScreen(
                                   context,
                                   ExpandPOstS(
                                     iscurrentposttextonly:
-                                        postelementlist[index]
+                                        postelementlist[itemIndex]
                                             .postFormat!
                                             .contains("null"),
-                                    index: index,
+                                    index: itemIndex,
                                     iscurrentindexpostisavideo:
-                                        postelementlist[index]
+                                        postelementlist[itemIndex]
                                                 .postFormat
                                                 .contains("video") ||
-                                            postelementlist[index]
+                                            postelementlist[itemIndex]
                                                 .postFormat
                                                 .contains("application"),
-                                    imageurl: postelementlist[index].post,
-                                    decriptions: postelementlist[index].content,
+                                    imageurl: postelementlist[itemIndex].post,
+                                    decriptions:
+                                        postelementlist[itemIndex].content,
                                   ));
                             },
                             child: Container(
@@ -348,7 +432,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                               backgroundImage:
                                                                   NetworkImage(
                                                                 postelementlist[
-                                                                        index]
+                                                                        itemIndex]
                                                                     .avatar,
                                                               ),
                                                             ),
@@ -371,7 +455,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                               children: [
                                                                 Text(
                                                                   postelementlist[
-                                                                          index]
+                                                                          itemIndex]
                                                                       .userId,
                                                                   maxLines: 1,
                                                                   style: TextStyle(
@@ -402,7 +486,8 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                               unlikepostfunction:
                                                                   () async {
                                                                 caculatedpageindex =
-                                                                    (index / 10)
+                                                                    (itemIndex /
+                                                                                10)
                                                                             .toInt() +
                                                                         1;
 
@@ -412,7 +497,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
 
                                                                 await unlikepost(
                                                                     postid:
-                                                                        postelementlist[index]
+                                                                        postelementlist[itemIndex]
                                                                             .id,
                                                                     userid:
                                                                         uid);
@@ -420,7 +505,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                 setState(() {
                                                                   getpostdataforlike(
                                                                       index:
-                                                                          index);
+                                                                          itemIndex);
                                                                 });
 
                                                                 final snackBar =
@@ -549,7 +634,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                             ),
                                                                             child:
                                                                                 Text(
-                                                                              postelementlist[index].content,
+                                                                              postelementlist[itemIndex].content,
                                                                               style: TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
                                                                             ),
                                                                           ),
@@ -566,7 +651,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                               ? VideoPlayerItem(
                                                                   videoUrl:
                                                                       postelementlist[
-                                                                              index]
+                                                                              itemIndex]
                                                                           .post,
                                                                 )
                                                               : InstaImageViewer(
@@ -577,7 +662,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                     fit: BoxFit
                                                                         .fitWidth,
                                                                     imageUrl:
-                                                                        postelementlist[index]
+                                                                        postelementlist[itemIndex]
                                                                             .post,
                                                                     placeholder: (context, url) => Container(
                                                                         // color: Colors.red,
@@ -620,7 +705,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                               0.75,
                                                           child: Text(
                                                             postelementlist[
-                                                                    index]
+                                                                    itemIndex]
                                                                 .userId,
                                                             style: TextStyle(
                                                               fontFamily:
@@ -664,7 +749,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                         SingleChildScrollView(
                                                                       child:
                                                                           Text(
-                                                                        "${postelementlist[index].content}",
+                                                                        "${postelementlist[itemIndex].content}",
                                                                         maxLines:
                                                                             null,
                                                                         style: TextStyle(
@@ -686,7 +771,8 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                             GestureDetector(
                                                               onTap: () async {
                                                                 caculatedpageindex =
-                                                                    (index / 10)
+                                                                    (itemIndex /
+                                                                                10)
                                                                             .toInt() +
                                                                         1;
                                                                 print("Caclualted page index from addlike" +
@@ -695,13 +781,13 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
 
                                                                 print("length of list before like" +
                                                                     postelementlist[
-                                                                            index]
+                                                                            itemIndex]
                                                                         .likes
                                                                         .length
                                                                         .toString());
                                                                 await postaddlike(
                                                                     postid:
-                                                                        postelementlist[index]
+                                                                        postelementlist[itemIndex]
                                                                             .id,
                                                                     userid:
                                                                         uid);
@@ -709,12 +795,12 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                 setState(() {
                                                                   getpostdataforlike(
                                                                       index:
-                                                                          index);
+                                                                          itemIndex);
                                                                 });
 
                                                                 print("length of list after like" +
                                                                     postelementlist[
-                                                                            index]
+                                                                            itemIndex]
                                                                         .likes
                                                                         .length
                                                                         .toString());
@@ -764,15 +850,15 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                 print("data");
 
                                                                 print(uid);
-                                                                print(index);
+                                                                print(
+                                                                    itemIndex);
 
-                                                                isCurrentUserLiked =
-                                                                    postelementlist[
-                                                                            index]
-                                                                        .likes
-                                                                        .any((like) =>
-                                                                            like.user ==
-                                                                            uid);
+                                                                isCurrentUserLiked = postelementlist[
+                                                                        itemIndex]
+                                                                    .likes
+                                                                    .any((like) =>
+                                                                        like.user ==
+                                                                        uid);
 
                                                                 // return ; // Key1 value not found
 
@@ -787,7 +873,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                 setState(() {
                                                                   currentpostid =
                                                                       postelementlist[
-                                                                              index]
+                                                                              itemIndex]
                                                                           .id;
                                                                 });
 
@@ -812,12 +898,12 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                             Padding(
                                                               padding:
                                                                   const EdgeInsets
-                                                                          .only(
+                                                                      .only(
                                                                       left:
                                                                           8.0),
                                                               child: Text(
                                                                 postelementlist[
-                                                                        index]
+                                                                        itemIndex]
                                                                     .likes
                                                                     .length
                                                                     .toString(),
@@ -847,7 +933,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                   GestureDetector(
                                                                 onTap: () {
                                                                   caculatedpageindex =
-                                                                      (index / 10)
+                                                                      (itemIndex / 10)
                                                                               .toInt() +
                                                                           1;
 
@@ -858,12 +944,12 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                                       pagenumber:
                                                                           caculatedpageindex,
                                                                       postingid:
-                                                                          postelementlist[index]
+                                                                          postelementlist[itemIndex]
                                                                               .id,
                                                                       context:
                                                                           context,
                                                                       index1:
-                                                                          index);
+                                                                          itemIndex);
                                                                 },
                                                                 child:
                                                                     Container(
@@ -1236,7 +1322,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                             //       focusedBorder: OutlineInputBorder(
                                             //         borderSide: BorderSide(
                                             //           width: 3,
-                                            //           color: Color(0xFF265AE8),
+                                            //           color: Color.fromRGBO(86, 103, 253, 1),
                                             //         ),
                                             //       ),
                                             //       enabledBorder: OutlineInputBorder(
@@ -1394,8 +1480,8 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                               ),
                             ),
                           );
-                        }),
-                  ),
+                        }
+                      }),
                 ),
                 //   } else {
                 //     return Center(
@@ -1450,7 +1536,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
   }
 
   Future<void> refreshdata() async {
-    await Navigator.push(
+    await Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ShowPostScreen()))
         .then((value) => onReturn());
   }
@@ -1463,7 +1549,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
     var response = await http.post(
       // Uri.https(
       //     'easyed-social-media-backend.onrender.com', '/comment/${postid}'),
-      Uri.https('social.easyeduverse.tech', '/comment/${postid}'),
+      Uri.https('api.easyeduverse.tech', '/comment/${postid}'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode(
@@ -1484,7 +1570,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
     var response = await http.delete(
       // Uri.https('easyed-social-media-backend.onrender.com',
       //     '/comment/${postid}/${commentid}'),
-      Uri.https('social.easyeduverse.tech', '/comment/${postid}/${commentid}'),
+      Uri.https('api.easyeduverse.tech', '/comment/${postid}/${commentid}'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode({"userId": userid}),
@@ -1499,7 +1585,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
     var response = await http.put(
       // Uri.https(
       //     'easyed-social-media-backend.onrender.com', '/unlike/${postid}'),
-      Uri.https('social.easyeduverse.tech', '/unlike/${postid}'),
+      Uri.https('api.easyeduverse.tech', '/unlike/${postid}'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode({"userId": userid}),
@@ -1524,7 +1610,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
   Future postaddlike({required String postid, required String userid}) async {
     var response = await http.put(
       // Uri.https('easyed-social-media-backend.onrender.com', '/like/${postid}'),
-      Uri.https('social.easyeduverse.tech', '/like/${postid}'),
+      Uri.https('api.easyeduverse.tech', '/like/${postid}'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode({"userId": userid}),
@@ -1550,7 +1636,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
     print("the getpost function calling  \n");
     final response = await http.get(
         // Uri.parse('https://easyed-social-media-backend.onrender.com/api/post'));
-        Uri.parse('https://social.easyeduverse.tech/api/post?page=${page}'));
+        Uri.parse('https://api.easyeduverse.tech/api/post?page=${page}'));
 
     print(page);
     var data = jsonDecode(response.body.toString());
@@ -1586,7 +1672,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
     final response = await http.get(
         // Uri.parse('https://easyed-social-media-backend.onrender.com/api/post'));
         Uri.parse(
-            'https://social.easyeduverse.tech/api/post?page=${caculatedpageindex}'));
+            'https://api.easyeduverse.tech/api/post?page=${caculatedpageindex}'));
 
     print(page);
     var data = jsonDecode(response.body.toString());

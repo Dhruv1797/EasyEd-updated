@@ -21,10 +21,17 @@ class StudentScreen extends StatefulWidget {
 
 class _StudentScreenState extends State<StudentScreen> {
   final uid = FirebaseAuth.instance.currentUser!.uid;
+  final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+  String? splituserid;
 
   Future<Teacher> getTeacherdata() async {
+    splituserid = uemailid.split('@')[0];
+    print(splituserid);
+
     final response = await http.get(
-      Uri.parse('https://api.easyeduverse.tech/api/user/${uid}'),
+      Uri.parse(
+          // 'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}'));
+          'https://api.easyeduverse.tech/api/user/${splituserid}'),
       // Uri.parse('https://easyed-backend.onrender.com/api/teacher/${uid}'),
     );
     var data = jsonDecode(response.body.toString());

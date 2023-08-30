@@ -16,19 +16,35 @@ import 'package:easyed/video_player_item.dart';
 import 'package:easyed/widgets/drawer.dart';
 import 'package:easyed/widgets/widgets.dart';
 
-class LecturesScreen extends StatefulWidget {
-  static const routeName = '/lecturesscreen';
-  const LecturesScreen({super.key});
+class SharedLecturesvideos extends StatefulWidget {
+  static const routeName = '/SharedLecturesvideos';
+  const SharedLecturesvideos({super.key});
 
   @override
-  State<LecturesScreen> createState() => _LecturesScreenState();
+  State<SharedLecturesvideos> createState() => _SharedLecturesvideosState();
 }
 
-class _LecturesScreenState extends State<LecturesScreen> {
+class _SharedLecturesvideosState extends State<SharedLecturesvideos> {
   final uid = FirebaseAuth.instance.currentUser!.uid;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   List<VideoLecture> lectureslist = [];
+
+  List<Sharedlecture> sharedlecturelist = [];
+
+  Teacher lectureteacherdata = Teacher(
+      id: 'id',
+      commons: [],
+      userDetails: [],
+      educationalDetails: [],
+      tasks: [],
+      notes: [],
+      videoLecture: [],
+      // students: [],
+      v: 1,
+      sharedlectures: [],
+      sharednotes: [],
+      sharedtasks: []);
 
   VideoLecture videoslecture = VideoLecture(
       subject: '', topic: '', videoLink: '', videoTitle: '', id: '', v: 0);
@@ -99,8 +115,8 @@ class _LecturesScreenState extends State<LecturesScreen> {
   }
 
   Future<void> refreshdata() async {
-    await Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LecturesScreen()))
+    await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => SharedLecturesvideos()))
         .then((value) => onReturn());
   }
 
@@ -146,7 +162,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // SizedBox(
                         //   width: 29,
@@ -167,7 +183,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                         Row(
                           children: [
                             Text(
-                              "Lecture",
+                              "Shared Lectures",
                               style: TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w900,
@@ -183,44 +199,44 @@ class _LecturesScreenState extends State<LecturesScreen> {
                           ],
                         ),
 
-                        InkWell(
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor:
-                                      Color.fromRGBO(86, 103, 253, 1),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  )),
-                              onPressed: () async {
-                                PersistentNavBarNavigator.pushNewScreen(
-                                  context,
-                                  screen: AddVideoScreen(),
-                                  withNavBar:
-                                      true, // OPTIONAL VALUE. True by default.
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.cupertino,
-                                );
-                                // nextScreen(context, AddVideoScreen());
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    "+ ",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Add Lecture",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              )),
-                        ),
+                        // InkWell(
+                        //   child: ElevatedButton(
+                        //       style: ElevatedButton.styleFrom(
+                        //           elevation: 5,
+                        //           backgroundColor:
+                        //               Color.fromRGBO(86, 103, 253, 1),
+                        //           shape: RoundedRectangleBorder(
+                        //             borderRadius: BorderRadius.circular(30),
+                        //           )),
+                        //       onPressed: () async {
+                        //         PersistentNavBarNavigator.pushNewScreen(
+                        //           context,
+                        //           screen: AddVideoScreen(),
+                        //           withNavBar:
+                        //               true, // OPTIONAL VALUE. True by default.
+                        //           pageTransitionAnimation:
+                        //               PageTransitionAnimation.cupertino,
+                        //         );
+                        //         // nextScreen(context, AddVideoScreen());
+                        //       },
+                        //       child: Row(
+                        //         children: [
+                        //           Text(
+                        //             "+ ",
+                        //             style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 24,
+                        //             ),
+                        //           ),
+                        //           Text(
+                        //             "Add Lecture",
+                        //             style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontWeight: FontWeight.w600),
+                        //           ),
+                        //         ],
+                        //       )),
+                        // ),
                         // SizedBox(
                         //   width: devicewidth * 0.7,
                         // ),
@@ -240,7 +256,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                   ),
                 ),
                 Container(
-                  height: 100.h,
+                  height: 110.h,
                   width: devicewidth * 0.95,
                   decoration: BoxDecoration(
                     color: Color.fromRGBO(255, 255, 255, 1),
@@ -258,9 +274,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                           //   width: 22,
                           // ),
                           Padding(
-                            padding: const EdgeInsets.only(
-                              left: 20.0,
-                            ),
+                            padding: const EdgeInsets.only(left: 20.0, top: 10),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -290,7 +304,6 @@ class _LecturesScreenState extends State<LecturesScreen> {
                   ),
                 ),
                 Container(
-                  // color: Colors.red,
                   height: deviceheight * 0.651,
                   width: devicewidth * 0.95,
                   child: RefreshIndicator(
@@ -302,7 +315,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             return ListView.builder(
-                              itemCount: lectureslist.length,
+                              itemCount: sharedlecturelist.length,
                               itemBuilder: (context, index) {
                                 return buildlistitem(context, index);
                               },
@@ -328,14 +341,15 @@ class _LecturesScreenState extends State<LecturesScreen> {
 
     double devicewidth = MediaQuery.of(context).size.width;
     // videoBoxlist subjectwidget = subjectBoxlist[index];
-    VideoLecture lecturedata = lectureslist[index];
-    final String videourl = lecturedata.videoLink;
+    Sharedlecture sharedlecturedata = sharedlecturelist[index];
+    // VideoLecture lecturedata = lectureslist[index];
+    final String videourl = sharedlecturedata.lectureId.videoLink;
     return GestureDetector(
       onTap: () {
         // print(index);
         // if (index == 0) {}
 
-        final String videourl = lecturedata.videoLink;
+        final String videourl = sharedlecturedata.lectureId.videoLink;
 
         PersistentNavBarNavigator.pushNewScreen(
           context,
@@ -375,6 +389,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
               SizedBox(
                 height: 9.h,
               ),
+
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -418,7 +433,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                         // color: Colors.red,
                         width: 150.w,
                         child: Text(
-                          lecturedata.videoTitle,
+                          sharedlecturedata.lectureId.videoTitle,
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w600,
@@ -431,7 +446,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
                         // color: Colors.red,
                         width: 150.w,
                         child: Text(
-                          lecturedata.topic,
+                          "SharedBy:  " + sharedlecturedata.sharedBy,
                           style: TextStyle(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w400,
@@ -442,19 +457,6 @@ class _LecturesScreenState extends State<LecturesScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    width: 30.w,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      _showTextFieldAlertDialog(context, lecturedata.id);
-                    },
-                    child: Container(
-                      height: 24.44,
-                      width: 22,
-                      child: SvgPicture.asset("assets/shareicon.svg"),
-                    ),
-                  )
                 ],
               ),
               SizedBox(
@@ -464,7 +466,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
               //   children: [
               //     Container(
               //         height: 108,
-              //         width: 190,
+              //         width: 200,
               //         decoration: BoxDecoration(
               //           color: Colors.black,
               //           borderRadius: BorderRadius.only(
@@ -500,7 +502,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
               //           Container(
               //             width: 135,
               //             child: Text(
-              //               lecturedata.videoTitle,
+              //               sharedlecturedata.lectureId.videoTitle,
               //               maxLines: 2,
               //               style: TextStyle(
               //                   fontSize: 15,
@@ -512,13 +514,21 @@ class _LecturesScreenState extends State<LecturesScreen> {
               //             // color: const Color.fromRGBO(244, 67, 54, 1),
               //             width: 135,
               //             child: Text(
-              //               lecturedata.topic,
+              //               sharedlecturedata.lectureId.topic,
               //               maxLines: 2,
               //               style: TextStyle(
               //                   fontSize: 12,
               //                   fontWeight: FontWeight.w400,
               //                   color: Color.fromRGBO(117, 124, 142, 1)),
               //             ),
+              //           ),
+              //           Text(
+              //             "SharedBy:  " + sharedlecturedata.sharedBy,
+              //             maxLines: 2,
+              //             style: TextStyle(
+              //                 fontSize: 10,
+              //                 fontWeight: FontWeight.w500,
+              //                 color: Color.fromRGBO(23, 23, 42, 1)),
               //           ),
               //           // Text(
               //           //   lecturedata.subject,
@@ -543,7 +553,7 @@ class _LecturesScreenState extends State<LecturesScreen> {
               //                 child: Container(
               //                   width: 60,
               //                   child: Text(
-              //                     lecturedata.subject,
+              //                     sharedlecturedata.lectureId.subject,
               //                     maxLines: 2,
               //                     style: TextStyle(
               //                         fontSize: 10,
@@ -579,95 +589,18 @@ class _LecturesScreenState extends State<LecturesScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          title: Text(
-            "SHARE",
-            style: TextStyle(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w600,
-              fontFamily: "Montserrat",
-              color: Color.fromRGBO(99, 109, 119, 1),
-            ),
-          ),
-          // title: Text("Enter Text ${globalteacherdata.id}"),
-          //  Text(lectureid),
-          content: Container(
-            height: 100,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Username",
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: "Montserrat",
-                    color: Color.fromRGBO(99, 109, 119, 1),
-                  ),
-                ),
-                SizedBox(
-                  height: 11.67,
-                ),
-                Container(
-                  width: 316.0.w,
-                  height: 49.14.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(7.45),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color.fromRGBO(182, 214, 204, 1),
-                        spreadRadius: 2,
-                        blurRadius: 6.r,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                    border: Border.all(
-                      width: 1.0, // 1px border width
-                      color: Color.fromRGBO(182, 214, 204, 1), // Border color
-                    ),
-                  ),
-                  child: TextFormField(
-                    controller: textFieldController,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w200,
-                      fontFamily: "Montserrat",
-                      color: Color.fromRGBO(54, 67, 86, 1),
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10.0),
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w200,
-                        fontFamily: "Montserrat",
-                        color: Color.fromRGBO(54, 67, 86, 1),
-                      ),
-                      hintText: ' @example Bamn',
-                    ),
-                    // validator: (val) {
-                    //   if (val!.length < 1) {
-                    //     return "Please Enter Subject";
-                    //   } else {
-                    //     return null;
-                    //   }
-                    // },
-                  ),
-                ),
-                // TextField(
-                //   controller: textFieldController,
-                //   decoration: InputDecoration(labelText: "@example bamn"),
-                // ),
-              ],
-            ),
+          title: Text("Enter Text ${globalteacherdata.id}"),
+          content: Column(
+            children: [
+              Text(lectureid),
+              TextField(
+                controller: textFieldController,
+                decoration: InputDecoration(labelText: "Text"),
+              ),
+            ],
           ),
           actions: <Widget>[
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(86, 103, 253, 1),
-              ),
               onPressed: () async {
                 // Handle the submit button press
                 String enteredText = textFieldController.text;
@@ -677,38 +610,17 @@ class _LecturesScreenState extends State<LecturesScreen> {
                 await addshareData(
                     lectureid: lectureid, sharedwith: enteredText);
 
-                Navigator.of(context).pop();
-
                 // Close the alert dialog
                 // Navigator.of(context).pop();
               },
-              child: Text(
-                "Submit",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: "Montserrat",
-                  color: Colors.white,
-                ),
-              ),
+              child: Text("Submit"),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Color.fromRGBO(86, 103, 253, 1),
-              ),
               onPressed: () {
                 // Close the alert dialog without doing anything
                 Navigator.of(context).pop();
               },
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: "Montserrat",
-                  color: Colors.white,
-                ),
-              ),
+              child: Text("Cancel"),
             ),
           ],
         );
@@ -753,32 +665,37 @@ class _LecturesScreenState extends State<LecturesScreen> {
     }
   }
 
-  Future<List<VideoLecture>> getlecturesdata() async {
+  Future<List<Sharedlecture>> getlecturesdata() async {
     final String uemailid = FirebaseAuth.instance.currentUser!.email!;
     String? splituserid;
 
     splituserid = uemailid.split('@')[0];
 
-    final response = await http.get(Uri.parse(
-        'https://api.easyeduverse.tech/api/user/$splituserid/lectures'));
+    final response = await http.get(
+        Uri.parse('https://api.easyeduverse.tech/api/user/${splituserid}'));
     // 'https://easyed-backend.onrender.com/api/teacher/$uid/lectures'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
+    sharedlecturelist = [];
     lectureslist = [];
     if (response.statusCode == 200) {
-      for (Map<String, dynamic> index in data) {
-        lectureslist.add(VideoLecture.fromJson(index));
+      lectureteacherdata = Teacher.fromJson(data);
+      print(lectureteacherdata.sharednotes!.length.toString() + "length");
+      for (Sharedlecture index in lectureteacherdata.sharedlectures!) {
+        sharedlecturelist.add(index);
       }
+
+      print(lectureslist.length.toString() + "length of share");
       // teacherslist.add(sampleteachers);
 
       // print(sampleteachers.toString());
       // for (Map<String, dynamic> index in data) {
       //   sampleteachers.add(Teacher.fromJson(index));
       // }
-      return lectureslist;
+      return sharedlecturelist;
     } else {
-      return lectureslist;
+      return sharedlecturelist;
     }
   }
 }

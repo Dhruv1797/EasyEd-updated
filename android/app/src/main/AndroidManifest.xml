@@ -3,6 +3,10 @@
         android:label="EasyED"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+    <meta-data
+        android:name="com.google.android.gms.ads.APPLICATION_ID"
+        android:value="ca-app-pub-5815010106350331~5190740868"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,4 +34,6 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 </manifest>

@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'package:random_string/random_string.dart';
@@ -44,7 +46,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
   bool isvideoloading = false;
   bool isloading = false;
   VideoLecture lecturedata = VideoLecture(
-      subject: "", topic: "", videoLink: "", videoTitle: "", id: "");
+      subject: "", topic: "", videoLink: "", videoTitle: "", id: "", v: 0);
   bool submitteddata = false;
   // Teacher teacherdata = Teacher(
   //     id: "",
@@ -161,48 +163,114 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     AuthService authService = AuthService();
     return ScaffoldMessenger(
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 70,
-          title: Container(
-            // color: Colors.red,
-            height: 80,
-            width: 300,
-            child: Center(
-              child: Row(
-                children: [
-                  Text(
-                    'ADD YOUR LECTURES',
-                    style: TextStyle(fontWeight: FontWeight.w900),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        // appBar: AppBar(
+        //   toolbarHeight: 70,
+        //   title: Container(
+        //     // color: Colors.red,
+        //     height: 80,
+        //     width: 300,
+        //     child: Center(
+        //       child: Row(
+        //         children: [
+        //           Text(
+        //             'ADD YOUR LECTURES',
+        //             style: TextStyle(fontWeight: FontWeight.w900),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
         body: SingleChildScrollView(
           child: Container(
               padding: EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    uploadvideo != null
-                        ? Container(
-                            decoration:
-                                BoxDecoration(border: Border.all(width: 3)),
-                            height: 300,
-                            width: 400,
-                            child: VideoPlayerFileItem(
-                              videofile: uploadvideo,
-                            ))
-                        : Container(
-                            decoration:
-                                BoxDecoration(border: Border.all(width: 3)),
-                            height: deviceheight * 0.27,
-                            width: devicewidth * 0.7,
-                            child: Center(
-                              child: Text("Upload Video "),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      "Upload",
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: "Montserrat",
+                        color: Color.fromRGBO(15, 15, 15, 1),
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: 22.h,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          isvideoloading = true;
+                        });
+
+                        await selectVideo();
+
+                        setState(() {
+                          isvideoloading = false;
+                        });
+                      },
+                      child: uploadvideo != null
+                          ? Container(
+                              decoration:
+                                  BoxDecoration(border: Border.all(width: 3)),
+                              height: 179.h,
+                              width: 297.w,
+                              child: VideoPlayerFileItem(
+                                videofile: uploadvideo,
+                              ))
+                          : Container(
+                              decoration: BoxDecoration(
+                                // color: Colors.red,
+                                color: Color.fromRGBO(255, 255, 255, 1),
+                                border: Border.all(
+                                  color: Color.fromRGBO(182, 214, 204, 1),
+                                ),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10),
+                                    bottomRight: Radius.circular(10)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromRGBO(182, 214, 204, 1),
+                                    blurRadius: 6.0,
+                                    offset: Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                              height: 179.h,
+                              width: 297.w,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      child: SvgPicture.asset(
+                                          "assets/uploadicon.svg"),
+                                    ),
+                                    SizedBox(
+                                      height: 23.62,
+                                    ),
+                                    Text(
+                                      "Tap to Browse files",
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Montserrat",
+                                        color: Color.fromRGBO(15, 15, 15, 1),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                          ),
+                    ),
                     // Text(userName),
                     // Text(email),
                     // Text(uid),
@@ -228,51 +296,88 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        ElevatedButton(
-                            onPressed: (() async {
-                              setState(() {
-                                isvideoloading = true;
-                              });
+                        // ElevatedButton(
+                        //     onPressed: (() async {
+                        //       setState(() {
+                        //         isvideoloading = true;
+                        //       });
 
-                              await selectVideo();
+                        //       await selectVideo();
 
-                              setState(() {
-                                isvideoloading = false;
-                              });
-                            }),
-                            child: isvideoloading
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                        color: Color.fromRGBO(38, 90, 232, 1)),
-                                  )
-                                : Text("Upload")),
+                        //       setState(() {
+                        //         isvideoloading = false;
+                        //       });
+                        //     }),
+                        //     child: isvideoloading
+                        //         ? Container(
+                        //             height: 20,
+                        //             width: 20,
+                        //             child: CircularProgressIndicator(
+                        //                 color: Color.fromRGBO(38, 90, 232, 1)),
+                        //           )
+                        //         : Text("Upload")),
                       ],
                     ),
 
                     Form(
                       key: formKey,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text(
+                            "Subject",
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(99, 109, 119, 1),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 11.67,
+                          ),
+                          Container(
+                            width: 316.0.w,
+                            height: 49.14.h,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(7.45),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromRGBO(182, 214, 204, 1),
+                                  spreadRadius: 2,
+                                  blurRadius: 6.r,
+                                  offset: Offset(0, 6),
+                                ),
+                              ],
+                              border: Border.all(
+                                width: 1.0, // 1px border width
+                                color: Color.fromRGBO(
+                                    182, 214, 204, 1), // Border color
+                              ),
+                            ),
                             child: TextFormField(
                               controller: subjectcontroller,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w200,
+                                fontFamily: "Montserrat",
+                                color: Color.fromRGBO(54, 67, 86, 1),
+                              ),
                               decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 3,
-                                      color: Color(0xFF265AE8),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 3,
-                                      color: Colors.black,
-                                    ), //<-- SEE HERE
-                                  ),
-                                  hintText: "Subject Name"),
+                                contentPadding: EdgeInsets.all(10.0),
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w200,
+                                  fontFamily: "Montserrat",
+                                  color: Color.fromRGBO(54, 67, 86, 1),
+                                ),
+                                hintText: ' @example Mathematics',
+                              ),
                               validator: (val) {
                                 if (val!.length < 1) {
                                   return "Please Enter Subject";
@@ -282,24 +387,60 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                               },
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          SizedBox(
+                            height: 18.54,
+                          ),
+                          Text(
+                            "Topic",
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(99, 109, 119, 1),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 11.67,
+                          ),
+                          Container(
+                            width: 316.0.w,
+                            height: 49.14.h,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(7.45),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromRGBO(182, 214, 204, 1),
+                                  spreadRadius: 2,
+                                  blurRadius: 6.r,
+                                  offset: Offset(0, 6),
+                                ),
+                              ],
+                              border: Border.all(
+                                width: 1.0, // 1px border width
+                                color: Color.fromRGBO(
+                                    182, 214, 204, 1), // Border color
+                              ),
+                            ),
                             child: TextFormField(
                               controller: topiccontroller,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w200,
+                                fontFamily: "Montserrat",
+                                color: Color.fromRGBO(54, 67, 86, 1),
+                              ),
                               decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 3,
-                                      color: Color(0xFF265AE8),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 3,
-                                      color: Colors.black,
-                                    ), //<-- SEE HERE
-                                  ),
-                                  hintText: "Topic Name"),
+                                contentPadding: EdgeInsets.all(10.0),
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w200,
+                                  fontFamily: "Montserrat",
+                                  color: Color.fromRGBO(54, 67, 86, 1),
+                                ),
+                                hintText: '@example Algebra',
+                              ),
                               validator: (val) {
                                 if (val!.length < 1) {
                                   return "Please Enter Topic";
@@ -309,24 +450,60 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                               },
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          SizedBox(
+                            height: 18.54,
+                          ),
+                          Text(
+                            "Video Title",
+                            style: TextStyle(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(99, 109, 119, 1),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 11.67,
+                          ),
+                          Container(
+                            width: 316.0.w,
+                            height: 49.14.h,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(7.45),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color.fromRGBO(182, 214, 204, 1),
+                                  spreadRadius: 2,
+                                  blurRadius: 6.r,
+                                  offset: Offset(0, 6),
+                                ),
+                              ],
+                              border: Border.all(
+                                width: 1.0, // 1px border width
+                                color: Color.fromRGBO(
+                                    182, 214, 204, 1), // Border color
+                              ),
+                            ),
                             child: TextFormField(
                               controller: videotitlecontroller,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w200,
+                                fontFamily: "Montserrat",
+                                color: Color.fromRGBO(54, 67, 86, 1),
+                              ),
                               decoration: InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 3,
-                                      color: Color(0xFF265AE8),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      width: 3,
-                                      color: Colors.black,
-                                    ), //<-- SEE HERE
-                                  ),
-                                  hintText: "Enter video title"),
+                                contentPadding: EdgeInsets.all(10.0),
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w200,
+                                  fontFamily: "Montserrat",
+                                  color: Color.fromRGBO(54, 67, 86, 1),
+                                ),
+                                hintText: ' @example Important questions',
+                              ),
                               validator: (val) {
                                 if (val!.length < 1) {
                                   return "Please Enter video title";
@@ -336,6 +513,90 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                               },
                             ),
                           ),
+                          SizedBox(
+                            height: 18.54,
+                          ),
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: TextFormField(
+                          //     controller: subjectcontroller,
+                          //     decoration: InputDecoration(
+                          //         focusedBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             width: 3,
+                          //             color: Color.fromRGBO(86, 103, 253, 1),
+                          //           ),
+                          //         ),
+                          //         enabledBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             width: 3,
+                          //             color: Colors.black,
+                          //           ), //<-- SEE HERE
+                          //         ),
+                          //         hintText: "Subject Name"),
+                          //     validator: (val) {
+                          //       if (val!.length < 1) {
+                          //         return "Please Enter Subject";
+                          //       } else {
+                          //         return null;
+                          //       }
+                          //     },
+                          //   ),
+                          // ),
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: TextFormField(
+                          //     controller: topiccontroller,
+                          //     decoration: InputDecoration(
+                          //         focusedBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             width: 3,
+                          //             color: Color.fromRGBO(86, 103, 253, 1),
+                          //           ),
+                          //         ),
+                          //         enabledBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             width: 3,
+                          //             color: Colors.black,
+                          //           ), //<-- SEE HERE
+                          //         ),
+                          //         hintText: "Topic Name"),
+                          //     validator: (val) {
+                          //       if (val!.length < 1) {
+                          //         return "Please Enter Topic";
+                          //       } else {
+                          //         return null;
+                          //       }
+                          //     },
+                          //   ),
+                          // ),
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: TextFormField(
+                          //     controller: videotitlecontroller,
+                          //     decoration: InputDecoration(
+                          //         focusedBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             width: 3,
+                          //             color: Color.fromRGBO(86, 103, 253, 1),
+                          //           ),
+                          //         ),
+                          //         enabledBorder: OutlineInputBorder(
+                          //           borderSide: BorderSide(
+                          //             width: 3,
+                          //             color: Colors.black,
+                          //           ), //<-- SEE HERE
+                          //         ),
+                          //         hintText: "Enter video title"),
+                          //     validator: (val) {
+                          //       if (val!.length < 1) {
+                          //         return "Please Enter video title";
+                          //       } else {
+                          //         return null;
+                          //       }
+                          //     },
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
@@ -413,7 +674,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                         width: 500,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              primary: Color(0xFF265AE8),
+                              primary: Color.fromRGBO(86, 103, 253, 1),
                               elevation: 0,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30))),
@@ -644,6 +905,11 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       required String uid}) async {
     String filename = basename(filepath!.path);
 
+    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+    String? splituserid;
+
+    splituserid = uemailid.split('@')[0];
+
     print("file base name ${filename}");
 
     try {
@@ -656,7 +922,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       });
 
       Response response = await Dio().post(
-        "https://api.easyeduverse.tech/api/user/$uid/lectures",
+        "https://api.easyeduverse.tech/api/user/$splituserid/lectures",
         // "https://easyed-backend.onrender.com/api/teacher/$uid/lectures",
         // "https://easyed-backend.onrender.com/api/teacher/cmKRXykJf9MyGenjXB2uwsQz5H13/lectures",
         data: formdata,
@@ -696,7 +962,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     // );
 
     // var response = await http.post(
-    //   Uri.httpss('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
+    //   Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
     //   headers: {'Content-Type': 'application/json'},
     //   // body: json.encode(sendData),
     //   body: json.encode(taskdata),
@@ -725,7 +991,12 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       // required String id,
       required String uid}) async {
     String filename = basename(filepath!.path);
-    String url = "https://api.easyeduverse.tech/api/user/$uid/lectures";
+    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+    String? splituserid;
+
+    splituserid = uemailid.split('@')[0];
+
+    String url = "https://api.easyeduverse.tech/api/user/$splituserid/lectures";
 
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
@@ -756,7 +1027,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     //   });
 
     //   Response response = await Dio().post(
-    //     "https://api.easyeduverse.tech/api/user/$uid/lectures",
+    //     "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/lectures",
     //     // "https://easyed-backend.onrender.com/api/teacher/$uid/lectures",
     //     //  "https://easyed-backend.onrender.com/api/teacher/cmKRXykJf9MyGenjXB2uwsQz5H13/lectures",
     //     data: formdata,
@@ -796,7 +1067,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
     // );
 
     // var response = await http.post(
-    //   Uri.httpss('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
+    //   Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
     //   headers: {'Content-Type': 'application/json'},
     //   // body: json.encode(sendData),
     //   body: json.encode(taskdata),

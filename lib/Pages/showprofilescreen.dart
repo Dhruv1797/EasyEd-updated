@@ -24,6 +24,8 @@ class ShowProfileScreen extends StatefulWidget {
 class _ShowProfileScreenState extends State<ShowProfileScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final uid = FirebaseAuth.instance.currentUser!.uid;
+  final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+  String? splituserid;
   // List<Student> samplestudents = [];
   List<Teacher> teacherslist = [];
 
@@ -38,15 +40,19 @@ class _ShowProfileScreenState extends State<ShowProfileScreen> {
 
   // List<Student> sampleteachers = [];
   Teacher sampleteachers = Teacher(
-      id: 'id',
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: 'id',
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
   @override
   Widget build(BuildContext context) {
     double deviceheight = MediaQuery.of(context).size.height;
@@ -388,8 +394,11 @@ class _ShowProfileScreenState extends State<ShowProfileScreen> {
   // }
 
   Future<Teacher> getTeacherdata() async {
-    final response = await http
-        .get(Uri.parse('https://api.easyeduverse.tech/api/user/${uid}'));
+    splituserid = uemailid.split('@')[0];
+    final response = await http.get(Uri.parse(
+        // 'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}'));
+
+        'https://api.easyeduverse.tech/api/user/${splituserid}'));
     // Uri.parse('https://easyed-backend.onrender.com/api/teacher/${uid}'));
     var data = jsonDecode(response.body.toString());
 

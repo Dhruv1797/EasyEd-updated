@@ -1,4 +1,7 @@
-import 'package:easyed/Pages/Termsncondn.dart';
+import 'package:easyed/Pages/sharednotesscreen.dart';
+import 'package:easyed/Pages/sharedtasks.dart';
+import 'package:easyed/Pages/sharedvideolectures.dart';
+import 'package:easyed/models/Teacher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
@@ -25,7 +28,7 @@ class _MyDrawerState extends State<MyDrawer> {
     AuthService authService = AuthService();
     return Drawer(
       child: Container(
-        color: Color.fromRGBO(38, 90, 232, 1),
+        color: Color.fromRGBO(86, 103, 253, 1),
         child: ListView(
           children: [
             SizedBox(
@@ -187,15 +190,53 @@ class _MyDrawerState extends State<MyDrawer> {
               onTap: () {
                 PersistentNavBarNavigator.pushNewScreen(
                   context,
-                  screen: Termsncondn(),
-                  withNavBar: false, // OPTIONAL VALUE. True by default.
+                  screen: SharedNotesScreen(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
                   pageTransitionAnimation: PageTransitionAnimation.cupertino,
                 );
               },
-              leading: ImageIcon(AssetImage("assets/terms.png")),
+              leading: ImageIcon(AssetImage("assets/socialnetwork.png")),
               iconColor: Colors.white,
               title: Text(
-                "Terms and Conditions",
+                "Shared notes",
+                style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: SharedLecturesvideos(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              },
+              leading: ImageIcon(AssetImage("assets/socialnetwork.png")),
+              iconColor: Colors.white,
+              title: Text(
+                "Shared videos",
+                style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: SharedTaskPage(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              },
+              leading: ImageIcon(AssetImage("assets/socialnetwork.png")),
+              iconColor: Colors.white,
+              title: Text(
+                "Shared Tasks",
                 style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontSize: 15,

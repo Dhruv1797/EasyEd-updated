@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:random_string/random_string.dart';
 import 'package:easyed/Pages/addquestionscreen.dart';
@@ -33,23 +34,29 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
   final formKey = GlobalKey<FormState>();
   bool submitteddata = false;
   Teacher teacherdata = Teacher(
-      id: "",
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: "",
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
 
   Task taskdata = Task(
-      creator: "",
-      taskClass: "",
-      subject: "",
-      topic: "",
-      questions: [],
-      id: "");
+    creator: "",
+    taskClass: "",
+    subject: "",
+    topic: "",
+    questions: [],
+    id: "",
+    v: 0,
+  );
 
   // DataModel modeldata =
   //     DataModel(name: "name", job: "job", id: "id", createdAt: DateTime.now());
@@ -107,7 +114,12 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
 
                 Text(
                   "ADD YOUR TASK HERE!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: "Montserrat",
+                    color: Color.fromRGBO(15, 15, 15, 1),
+                  ),
                 ),
 
                 // GestureDetector(
@@ -135,6 +147,7 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                 Form(
                   key: formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Padding(
                       //   padding: const EdgeInsets.all(8.0),
@@ -156,17 +169,57 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                       //     },
                       //   ),
                       // ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      Text(
+                        "Class",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: classcontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Class"),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: ' @example 12th/11th',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Class";
@@ -176,17 +229,60 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+                      Text(
+                        "Subject",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: subjectcontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter Subject"),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: ' @example Mathematics',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter Subject";
@@ -196,17 +292,60 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                           },
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+                      Text(
+                        "Topic",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: "Montserrat",
+                          color: Color.fromRGBO(99, 109, 119, 1),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 11.67,
+                      ),
+                      Container(
+                        width: 316.0.w,
+                        height: 49.14.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(7.45),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color.fromRGBO(182, 214, 204, 1),
+                              spreadRadius: 2,
+                              blurRadius: 6.r,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                          border: Border.all(
+                            width: 1.0, // 1px border width
+                            color: Color.fromRGBO(
+                                182, 214, 204, 1), // Border color
+                          ),
+                        ),
                         child: TextFormField(
                           controller: topiccontroller,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w200,
+                            fontFamily: "Montserrat",
+                            color: Color.fromRGBO(54, 67, 86, 1),
+                          ),
                           decoration: InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: Colors.black), //<-- SEE HERE
-                              ),
-                              hintText: "Enter topic name"),
+                            contentPadding: EdgeInsets.all(10.0),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(54, 67, 86, 1),
+                            ),
+                            hintText: ' @example Algebra',
+                          ),
                           validator: (val) {
                             if (val!.length < 1) {
                               return "Please Enter topic";
@@ -216,6 +355,70 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                           },
                         ),
                       ),
+                      SizedBox(
+                        height: 18.54,
+                      ),
+
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: classcontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Class"),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Class";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: subjectcontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter Subject"),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Subject";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: topiccontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter topic name"),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter topic";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -281,7 +484,7 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                 // ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      primary: Color.fromRGBO(86, 103, 253, 1),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30))),
@@ -311,6 +514,7 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                         subject: subjectname,
                         topic: topicname,
                         id: widget.taskid,
+                        v: 0,
                         questions: [
                           // Question(
                           //   question: question1text,
@@ -504,10 +708,14 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
     //     ])
     //   },
     // );
+    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+    String? splituserid;
+
+    splituserid = uemailid.split('@')[0];
 
     var response = await http.post(
-      Uri.https('api.easyeduverse.tech', '/api/user/${uid}/task'),
-      // Uri.httpss('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
+      Uri.https('api.easyeduverse.tech', '/api/user/${splituserid}/task'),
+      // Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode(taskdata),

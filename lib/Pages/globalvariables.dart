@@ -8,10 +8,15 @@ Teacher globalteacherdata = Teacher(
     tasks: [],
     notes: [],
     videoLecture: [],
-    students: [],
-    v: 1);
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: []);
 
 String? globalusername;
 
 double? globaldeviceheight;
 double? globaldevicewidth;
+
+String? globalsplitusername;

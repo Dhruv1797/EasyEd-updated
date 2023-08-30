@@ -59,24 +59,30 @@ class _QuizPageState extends State<QuizPage> {
   int count = -1;
 
   Task sampletask = Task(
-      creator: "",
-      taskClass: "",
-      subject: "",
-      topic: "",
-      questions: [],
-      id: "");
+    creator: "",
+    taskClass: "",
+    subject: "",
+    topic: "",
+    questions: [],
+    id: "",
+    v: 0,
+  );
 
   // List<Student> sampleteachers = [];
   Teacher sampleteachers = Teacher(
-      id: 'id',
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: 'id',
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -355,8 +361,13 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Future<List<Task>> gettaskdata() async {
-    final response = await http
-        .get(Uri.parse('https://api.easyeduverse.tech/api/user/${uid}/task'));
+    final String uemailid = FirebaseAuth.instance.currentUser!.email!;
+    String? splituserid;
+
+    splituserid = uemailid.split('@')[0];
+
+    final response = await http.get(Uri.parse(
+        'https://api.easyeduverse.tech/api/user/${splituserid}/task'));
     // 'https://easyed-backend.onrender.com/api/teacher/${uid}/task'));
     var data = jsonDecode(response.body.toString());
 

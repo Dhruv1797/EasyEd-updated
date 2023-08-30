@@ -2,9 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easyed/Pages/globalvariables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:easyed/Pages/studentscreen.dart';
@@ -59,7 +62,7 @@ Future<Teacher> submitdata({
 
   var response = await http.post(
     Uri.https('api.easyeduverse.tech', '/api/user'),
-    // Uri.httpss('easyed-backend.onrender.com', '/api/teacher'),
+    // Uri.https('easyed-backend.onrender.com', '/api/teacher'),
     headers: {'Content-Type': 'application/json'},
     // body: json.encode(sendData),
     body: json.encode(teacherdata),
@@ -88,7 +91,7 @@ Future<Teacher> submitdata({
 
     return Teacher.fromJson(jsonDecode(response.body));
   } else {
-    throw Exception(" Failed");
+    throw Exception(" Failed " + response.statusCode.toString());
   }
 }
 
@@ -177,15 +180,19 @@ class _test2screenState extends State<test2screen> {
   }
 
   Teacher teacherdata = Teacher(
-      id: "",
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+    id: "",
+    commons: [],
+    userDetails: [],
+    educationalDetails: [],
+    tasks: [],
+    notes: [],
+    videoLecture: [],
+    // students: [],
+    v: 1,
+    sharedlectures: [],
+    sharednotes: [],
+    sharedtasks: [],
+  );
 
   // DataModel modeldata =
   //     DataModel(name: "name", job: "job", id: "id", createdAt: DateTime.now());
@@ -230,12 +237,12 @@ class _test2screenState extends State<test2screen> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Personal Informations',
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-        ),
+        // appBar: AppBar(
+        //   title: Text(
+        //     'Personal Informations',
+        //     style: TextStyle(fontWeight: FontWeight.w700),
+        //   ),
+        // ),
         body: SingleChildScrollView(
           child: StreamBuilder(
               stream:
@@ -251,574 +258,1046 @@ class _test2screenState extends State<test2screen> {
                 fullname = snapshot.data!.docs[uidrank].data()['fullName'];
                 emailid = snapshot.data!.docs[uidrank].data()['email'];
                 return Container(
-                    padding: EdgeInsets.all(1),
-                    child: Column(
-                      children: [
-                        // Text(snapshot.data!.docs[uidrank].data()['email']),
-                        // Text(snapshot.data!.docs[uidrank].data()['fullName']),
-                        GestureDetector(
-                            onTap: () async {
-                              setState(() {
-                                isimageloading = true;
-                              });
+                    // padding: EdgeInsets.all(1),
+                    child: Padding(
+                  padding: EdgeInsets.only(left: 20.0.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 72.w,
+                      ),
 
-                              await getImage();
-                              setState(() {
-                                isimageloading = false;
-                              });
-                            },
-                            child: isimageloading
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                        color: Color.fromRGBO(38, 90, 232, 1)),
-                                  )
-                                : Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 30.0),
-                                    child: selectedImage != null
-                                        ? Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            height: 170,
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              child: CircleAvatar(
-                                                backgroundColor: Colors.white,
-                                                backgroundImage: Image.file(
-                                                  selectedImage!,
-                                                  fit: BoxFit.cover,
-                                                ).image,
-                                                radius: 50,
-                                                // child: Image.file(
-                                                //   selectedImage!,
-                                                //   fit: BoxFit.cover,
-                                                // ),
-                                              ),
-                                            ),
-                                          )
-                                        : Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            height: 170,
-                                            // decoration: BoxDecoration(
-                                            //     color: Colors.white,
-                                            //     borderRadius: BorderRadius.circular(6)),
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              child: CircleAvatar(
-                                                child: Container(
-                                                    height: 131,
-                                                    width: 131,
-                                                    child: Image.asset(
-                                                        'assets/Ellipse24.png')),
-                                                backgroundColor: Colors.white,
-                                                // backgroundImage: Image.file(
-                                                //   selectedImage!,
-                                                //   fit: BoxFit.cover,
-                                                // ).image,
-                                                radius: 50,
-                                                // child: Icon(
-                                                //   Icons.add_a_photo,
-                                                //   color: Colors.black45,
-                                                // ),
-                                              ),
-                                            ),
-                                          ),
-                                  )),
-                        // Text(userName),
-                        // Text(email),
-                        // Text(uid),
-
-                        // TextFormField(
-                        //   controller: idcontroller,
-                        //   decoration: InputDecoration(
-                        //       border: OutlineInputBorder(
-                        //           // borderRadius: BorderRadius.circular(20),
-                        //           ),
-                        //       hintText: "Enter id"),
-                        // ),
-                        Form(
-                          key: formKey,
-                          child: Column(
-                            children: [
-                              // Padding(
-                              //   padding: const EdgeInsets.all(8.0),
-                              //   child: TextFormField(
-                              //     controller: firstnamecontroller,
-                              //     decoration: InputDecoration(
-                              //         focusedBorder: OutlineInputBorder(
-                              //           borderSide: BorderSide(
-                              //             color: Color(0xFF265AE8),
-                              //           ),
-                              //         ),
-                              //         enabledBorder: OutlineInputBorder(
-                              //           borderSide: BorderSide(
-                              //             width: 3,
-                              //             color: Color(0xFF265AE8),
-                              //           ), //<-- SEE HERE
-                              //         ),
-                              //         hintText: "Full Name"),
-                              //     validator: (val) {
-                              //       if (val!.length < 1) {
-                              //         return "Enter Full Name";
-                              //       } else {
-                              //         return null;
-                              //       }
-                              //     },
-                              //   ),
-                              // ),
-                              // Padding(
-                              //   padding: const EdgeInsets.all(8.0),
-                              //   child: TextFormField(
-                              //     controller: lastnamecontroller,
-                              //     decoration: InputDecoration(
-                              //         focusedBorder: OutlineInputBorder(
-                              //           borderSide: BorderSide(
-                              //             color: Color(0xFF265AE8),
-                              //           ),
-                              //         ),
-                              //         enabledBorder: OutlineInputBorder(
-                              //           borderSide: BorderSide(
-                              //             width: 3,
-                              //             color: Color(0xFF265AE8),
-                              //           ), //<-- SEE HERE
-                              //         ),
-                              //         hintText: "Last Name"),
-                              //     validator: (val) {
-                              //       if (val!.length < 1) {
-                              //         return "Enter Last Name";
-                              //       } else {
-                              //         return null;
-                              //       }
-                              //     },
-                              //   ),
-                              // ),
-                              // Padding(
-                              //   padding: const EdgeInsets.all(8.0),
-                              //   child: TextFormField(
-                              //     controller: emailcontroller,
-                              //     decoration: InputDecoration(
-                              //         focusedBorder: OutlineInputBorder(
-                              //           borderSide: BorderSide(
-                              //             color: Color(0xFF265AE8),
-                              //           ),
-                              //         ),
-                              //         enabledBorder: OutlineInputBorder(
-                              //           borderSide: BorderSide(
-                              //             width: 3,
-                              //             color: Color(0xFF265AE8),
-                              //           ), //<-- SEE HERE
-                              //         ),
-                              //         hintText: "Enter Email"),
-                              //     validator: (val) {
-                              //       if (val!.length < 1) {
-                              //         return "Enter Email";
-                              //       } else {
-                              //         return null;
-                              //       }
-                              //     },
-                              //   ),
-                              // ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextFormField(
-                                  keyboardType: TextInputType.number,
-                                  controller: mobilecontroller,
-                                  decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Color(0xFF265AE8),
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          width: 3,
-                                          color: Color(0xFF265AE8),
-                                        ), //<-- SEE HERE
-                                      ),
-                                      hintText: "Enter Mobile number"),
-                                  validator: (val) {
-                                    if (val!.length < 1) {
-                                      return "Enter Mobile Number";
-                                    } else if (val.length != 10) {
-                                      return "Please Enter 10 digit Mobile Number";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextFormField(
-                                  controller: instituteNamecontroller,
-                                  decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Color(0xFF265AE8),
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          width: 3,
-                                          color: Color(0xFF265AE8),
-                                        ), //<-- SEE HERE
-                                      ),
-                                      hintText: "Enter Institute Name"),
-                                  validator: (val) {
-                                    if (val!.length < 1) {
-                                      return "Enter Institute Name";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextFormField(
-                                  controller: classcontroller,
-                                  decoration: InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Color(0xFF265AE8),
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          width: 3,
-                                          color: Color(0xFF265AE8),
-                                        ), //<-- SEE HERE
-                                      ),
-                                      hintText: "Enter Profession "),
-                                  validator: (val) {
-                                    if (val!.length < 1) {
-                                      return "Enter Profession ";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                ),
-                              ),
-                            ],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 50.w,
                           ),
-                        ),
+                          Text(
+                            "Create your profile",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: "Montserrat",
+                              color: Color.fromRGBO(86, 103, 253, 1),
+                            ),
+                          ),
+                        ],
+                      ),
 
-                        SizedBox(
-                          height: 20,
-                        ),
+                      SizedBox(
+                        height: 30.h,
+                      ),
+                      // Text(snapshot.data!.docs[uidrank].data()['email']),
+                      // Text(snapshot.data!.docs[uidrank].data()['fullName']),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 110.w,
+                          ),
+                          GestureDetector(
+                              onTap: () async {
+                                setState(() {
+                                  isimageloading = true;
+                                });
 
-                        // ElevatedButton(
-                        //     onPressed: () {
-                        //       getImage();
-                        //     },
-                        //     child: Text("get image")),
-                        // ElevatedButton(
-                        //     onPressed: () {
-                        //       uploadavatar();
-                        //     },
-                        //     child: Text("upload image")),
-                        // TextFormField(
-                        //   controller: jobcontroller,
-                        //   decoration: InputDecoration(
-                        //       border: OutlineInputBorder(
-                        //           // borderRadius: BorderRadius.circular(20),
-                        //           ),
-                        //       hintText: "job title"),
-                        // ),
-                        // ElevatedButton(
-                        //     onPressed: () async {
-                        //       await uploadavatar();
+                                await getImage();
+                                setState(() {
+                                  isimageloading = false;
+                                });
+                              },
+                              child: isimageloading
+                                  ? Container(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                          color:
+                                              Color.fromRGBO(38, 90, 232, 1)),
+                                    )
+                                  : Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 30.0),
+                                      child: selectedImage != null
+                                          ? Container(
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 16),
+                                              height: 83,
+                                              width: 83,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                child: CircleAvatar(
+                                                  backgroundColor: Colors.white,
+                                                  backgroundImage: Image.file(
+                                                    selectedImage!,
+                                                    fit: BoxFit.cover,
+                                                  ).image,
+                                                  radius: 50,
+                                                  // child: Image.file(
+                                                  //   selectedImage!,
+                                                  //   fit: BoxFit.cover,
+                                                  // ),
+                                                ),
+                                              ),
+                                            )
+                                          : Container(
+                                              height: 83.h,
+                                              width: 83.w,
+                                              child: Stack(
+                                                alignment:
+                                                    Alignment.bottomRight,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                      "assets/profilepicture.svg"),
+                                                  GestureDetector(
+                                                    onTap: () async {
+                                                      setState(() {
+                                                        isimageloading = true;
+                                                      });
 
-                        //       String id = uid;
-                        //       String firstname = firstnamecontroller.text;
-                        //       String lastname = lastnamecontroller.text;
-                        //       String email = emailcontroller.text;
-                        //       String mobile = mobilecontroller.text;
-                        //       String institutename = instituteNamecontroller.text;
-                        //       String classname = classcontroller.text;
+                                                      await getImage();
+                                                      setState(() {
+                                                        isimageloading = false;
+                                                      });
+                                                    },
+                                                    child: SvgPicture.asset(
+                                                      "assets/greencamera.svg",
+                                                      height: 24,
+                                                      width: 24,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                    )),
+                        ],
+                      ),
 
-                        //       Teacher teacherdata = Teacher(
-                        //           id: id,
-                        //           commons: [
-                        //             Common(
-                        //               createdOn:
-                        //                   DateTime.parse("2023-06-30T09:00:00.000Z"),
-                        //               updatedOn:
-                        //                   DateTime.parse("2023-06-30T09:00:00.000Z"),
-                        //               id: "649ebfb5b4a2118b5424694e",
-                        //             )
-                        //           ],
-                        //           userDetails: [
-                        //             UserDetail(
-                        //                 firstName: firstname,
-                        //                 lastName: lastname,
-                        //                 email: email,
-                        //                 mobile: mobile,
-                        //                 avatar: avatarurl!,
-                        //                 id: "649ebfb5b4a2118b5424694e")
-                        //           ],
-                        //           educationalDetails: [
-                        //             EducationalDetail(
-                        //                 instituteName: institutename,
-                        //                 educationalDetailClass: classname,
-                        //                 id: "649ebfb5b4a2118b5424694e")
-                        //           ],
-                        //           tasks: [],
-                        //           notes: [],
-                        //           videoLecture: [],
-                        //           students: [],
-                        //           v: 91);
-                        //       ///////String job = jobcontroller.text;
+                      // Text(userName),
+                      // Text(email),
+                      // Text(uid),
 
-                        //       Teacher data = await submitdata(
-                        //           teacherdata: teacherdata, id: id, context: context
-
-                        //           ///////// createdOn: DateTime.now(),
-                        //           ////////// updatedOn: DateTime.now());
-                        //           );
-
-                        //       await FirebaseFirestore.instance
-                        //           .collection("users")
-                        //           .doc(uid)
-                        //           .update({
-                        //         "filldetails": true,
-                        //       });
-
-                        //       setState(() {
-                        //         teacherdata = data;
-                        //       });
-
-                        //       nextScreen(context, StudentScreen());
-                        //     },
-                        //     child: Text("Submit",  )),
-
-                        SizedBox(
-                          width: 200,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                primary: Color(0xFF265AE8),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30))),
-                            child: isloading
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white),
-                                  )
-                                : Text(
-                                    "Submit",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
+                      // TextFormField(
+                      //   controller: idcontroller,
+                      //   decoration: InputDecoration(
+                      //       border: OutlineInputBorder(
+                      //           // borderRadius: BorderRadius.circular(20),
+                      //           ),
+                      //       hintText: "Enter id"),
+                      // ),
+                      Form(
+                        key: formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Mobile No.",
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: "Montserrat",
+                                color: Color.fromRGBO(99, 109, 119, 1),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 11.67,
+                            ),
+                            Container(
+                              width: 316.0.w,
+                              height: 49.14.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7.45),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromRGBO(182, 214, 204, 1),
+                                    spreadRadius: 2,
+                                    blurRadius: 6.r,
+                                    offset: Offset(0, 6),
                                   ),
-                            onPressed: () async {
-                              // for makeing optional image
-                              if (formKey.currentState!.validate()) {
-                                print(isuploaded);
-                                if (isuploaded == false) {
-                                  avatarurl =
-                                      "https://firebasestorage.googleapis.com/v0/b/easyed-9df02.appspot.com/o/UserAvatarImages%2Faccount.png?alt=media&token=63577669-1e6e-4291-aca0-427354ef3b79";
+                                ],
+                                border: Border.all(
+                                  width: 1.0, // 1px border width
+                                  color: Color.fromRGBO(
+                                      182, 214, 204, 1), // Border color
+                                ),
+                              ),
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: mobilecontroller,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w200,
+                                  fontFamily: "Montserrat",
+                                  color: Color.fromRGBO(54, 67, 86, 1),
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(10.0),
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w200,
+                                    fontFamily: "Montserrat",
+                                    color: Color.fromRGBO(54, 67, 86, 1),
+                                  ),
+                                  hintText: ' @example 9343XXXX24',
+                                ),
+                                validator: (val) {
+                                  if (val!.length < 1) {
+                                    return "Enter Mobile Number";
+                                  } else if (val.length != 10) {
+                                    return "Please Enter 10 digit Mobile Number";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 18.54,
+                            ),
+                            Text(
+                              "Institute",
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: "Montserrat",
+                                color: Color.fromRGBO(99, 109, 119, 1),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 11.67,
+                            ),
+                            Container(
+                              width: 316.0.w,
+                              height: 49.14.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7.45),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromRGBO(182, 214, 204, 1),
+                                    spreadRadius: 2,
+                                    blurRadius: 6.r,
+                                    offset: Offset(0, 6),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  width: 1.0, // 1px border width
+                                  color: Color.fromRGBO(
+                                      182, 214, 204, 1), // Border color
+                                ),
+                              ),
+                              child: TextFormField(
+                                controller: instituteNamecontroller,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w200,
+                                  fontFamily: "Montserrat",
+                                  color: Color.fromRGBO(54, 67, 86, 1),
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(10.0),
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w200,
+                                    fontFamily: "Montserrat",
+                                    color: Color.fromRGBO(54, 67, 86, 1),
+                                  ),
+                                  hintText: ' @example NIT/IIT/XYZ School',
+                                ),
+                                validator: (val) {
+                                  if (val!.length < 1) {
+                                    return "Enter Institute Name";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 18.54,
+                            ),
+                            Text(
+                              "Profession",
+                              style: TextStyle(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: "Montserrat",
+                                color: Color.fromRGBO(99, 109, 119, 1),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 11.67,
+                            ),
+                            Container(
+                              width: 316.0.w,
+                              height: 49.14.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7.45),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Color.fromRGBO(182, 214, 204, 1),
+                                    spreadRadius: 2,
+                                    blurRadius: 6.r,
+                                    offset: Offset(0, 6),
+                                  ),
+                                ],
+                                border: Border.all(
+                                  width: 1.0, // 1px border width
+                                  color: Color.fromRGBO(
+                                      182, 214, 204, 1), // Border color
+                                ),
+                              ),
+                              child: TextFormField(
+                                controller: classcontroller,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w200,
+                                  fontFamily: "Montserrat",
+                                  color: Color.fromRGBO(54, 67, 86, 1),
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.all(10.0),
+                                  border: InputBorder.none,
+                                  hintStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w200,
+                                    fontFamily: "Montserrat",
+                                    color: Color.fromRGBO(54, 67, 86, 1),
+                                  ),
+                                  hintText: '@example Student/Teacher',
+                                ),
+                                validator: (val) {
+                                  if (val!.length < 1) {
+                                    return "Enter Profession ";
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 80.85,
+                            ),
 
-                                  setState(() {
-                                    isloading = true;
-                                  });
+                            Padding(
+                              padding: EdgeInsets.only(left: 24.0.w),
+                              child: GestureDetector(
+                                onTap: () async {
+                                  // for makeing optional image
+                                  if (formKey.currentState!.validate()) {
+                                    print(isuploaded);
+                                    if (isuploaded == false) {
+                                      avatarurl =
+                                          "https://firebasestorage.googleapis.com/v0/b/easyed-9df02.appspot.com/o/UserAvatarImages%2Faccount.png?alt=media&token=63577669-1e6e-4291-aca0-427354ef3b79";
 
-                                  String id = uid;
-                                  // String id = uid;
-                                  String firstname = fullname;
-                                  // String firstname = firstnamecontroller.text;
-                                  String lastname = emailid.split('@')[0];
-                                  String email = emailid;
-                                  // String email = emailcontroller.text;
-                                  String mobile = mobilecontroller.text;
-                                  String institutename =
-                                      instituteNamecontroller.text;
-                                  String classname = classcontroller.text;
+                                      setState(() {
+                                        isloading = true;
+                                      });
 
-                                  Teacher teacherdata = Teacher(
-                                      id: id,
-                                      commons: [
-                                        Common(
-                                          createdOn: DateTime.parse(
-                                              "2023-06-30T09:00:00.000Z"),
-                                          updatedOn: DateTime.parse(
-                                              "2023-06-30T09:00:00.000Z"),
-                                          id: "649ebfb5b4a2118b5424694e",
-                                        )
-                                      ],
-                                      userDetails: [
-                                        UserDetail(
-                                            firstName: firstname,
-                                            lastName: lastname,
-                                            email: email,
-                                            mobile: mobile,
-                                            avatar: avatarurl!,
-                                            id: "649ebfb5b4a2118b5424694e")
-                                      ],
-                                      educationalDetails: [
-                                        EducationalDetail(
-                                            instituteName: institutename,
-                                            educationalDetailClass: classname,
-                                            id: "649ebfb5b4a2118b5424694e")
-                                      ],
-                                      tasks: [],
-                                      notes: [],
-                                      videoLecture: [],
-                                      students: [],
-                                      v: 91);
-                                  ///////String job = jobcontroller.text;
+                                      String id = uid;
+                                      // String id = uid;
+                                      String firstname = fullname;
+                                      // String firstname = firstnamecontroller.text;
+                                      String lastname = emailid.split('@')[0];
+                                      String email = emailid;
+                                      // String email = emailcontroller.text;
+                                      String mobile = mobilecontroller.text;
+                                      String institutename =
+                                          instituteNamecontroller.text;
+                                      String classname = classcontroller.text;
 
-                                  Teacher data = await submitdata(
-                                      teacherdata: teacherdata,
-                                      id: id,
-                                      context: context
+                                      Teacher teacherdata = Teacher(
+                                        id: id,
+                                        commons: [
+                                          Common(
+                                            createdOn: DateTime.parse(
+                                                "2023-06-30T09:00:00.000Z"),
+                                            updatedOn: DateTime.parse(
+                                                "2023-06-30T09:00:00.000Z"),
+                                            id: "649ebfb5b4a2118b5424694e",
+                                          )
+                                        ],
+                                        userDetails: [
+                                          UserDetail(
+                                              firstName: firstname,
+                                              lastName: lastname,
+                                              email: email,
+                                              mobile: mobile,
+                                              avatar: avatarurl!,
+                                              id: "649ebfb5b4a2118b5424694e")
+                                        ],
+                                        educationalDetails: [
+                                          EducationalDetail(
+                                              instituteName: institutename,
+                                              educationalDetailClass: classname,
+                                              id: "649ebfb5b4a2118b5424694e")
+                                        ],
+                                        tasks: [],
+                                        notes: [],
+                                        videoLecture: [],
+                                        // students: [],
+                                        v: 0,
+                                        sharedlectures: [],
+                                        sharednotes: [],
+                                        sharedtasks: [],
+                                      );
+                                      ///////String job = jobcontroller.text;
 
-                                      ///////// createdOn: DateTime.now(),
-                                      ////////// updatedOn: DateTime.now());
+                                      Teacher data = await submitdata(
+                                          teacherdata: teacherdata,
+                                          id: id,
+                                          context: context
+
+                                          ///////// createdOn: DateTime.now(),
+                                          ////////// updatedOn: DateTime.now());
+                                          );
+
+                                      await FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(uid)
+                                          .update({
+                                        "filldetails": true,
+                                      });
+
+                                      setState(() {
+                                        teacherdata = data;
+                                      });
+
+                                      setState(() {
+                                        isloading = false;
+                                      });
+
+                                      PersistentNavBarNavigator.pushNewScreen(
+                                        context,
+                                        screen: StudentScreen(),
+                                        withNavBar:
+                                            true, // OPTIONAL VALUE. True by default.
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.cupertino,
                                       );
 
-                                  await FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(uid)
-                                      .update({
-                                    "filldetails": true,
-                                  });
+                                      // nextScreen(context, StudentScreen());
+                                      // final snackBar = SnackBar(
+                                      //   backgroundColor: Colors.red,
+                                      //   duration: Duration(seconds: 1),
+                                      //   dismissDirection: DismissDirection.horizontal,
+                                      //   content: const Text(
+                                      //     'Please upload the Profile Picture.',
+                                      //     style: TextStyle(),
+                                      //   ),
+                                      // );
+                                      // ScaffoldMessenger.of(context)
+                                      //     .hideCurrentSnackBar();
 
-                                  setState(() {
-                                    teacherdata = data;
-                                  });
+                                      // ScaffoldMessenger.of(context)
+                                      //     .showSnackBar(snackBar);
+                                    } else {
+                                      setState(() {
+                                        isloading = true;
+                                      });
+                                      await uploadavatar();
 
-                                  setState(() {
-                                    isloading = false;
-                                  });
+                                      globalsplitusername =
+                                          emailid.split('@')[0];
 
-                                  PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: StudentScreen(),
-                                    withNavBar:
-                                        true, // OPTIONAL VALUE. True by default.
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.cupertino,
-                                  );
+                                      String id = globalsplitusername!;
+                                      String firstname = fullname;
+                                      // String firstname = firstnamecontroller.text;
+                                      String lastname = emailid.split('@')[0];
+                                      String email = emailid;
+                                      // String email = emailcontroller.text;
+                                      String mobile = mobilecontroller.text;
+                                      String institutename =
+                                          instituteNamecontroller.text;
+                                      String classname = classcontroller.text;
 
-                                  // nextScreen(context, StudentScreen());
-                                  // final snackBar = SnackBar(
-                                  //   backgroundColor: Colors.red,
-                                  //   duration: Duration(seconds: 1),
-                                  //   dismissDirection: DismissDirection.horizontal,
-                                  //   content: const Text(
-                                  //     'Please upload the Profile Picture.',
-                                  //     style: TextStyle(),
-                                  //   ),
-                                  // );
-                                  // ScaffoldMessenger.of(context)
-                                  //     .hideCurrentSnackBar();
+                                      Teacher teacherdata = Teacher(
+                                        id: id,
+                                        commons: [
+                                          Common(
+                                            createdOn: DateTime.parse(
+                                                "2023-06-30T09:00:00.000Z"),
+                                            updatedOn: DateTime.parse(
+                                                "2023-06-30T09:00:00.000Z"),
+                                            id: "649ebfb5b4a2118b5424694e",
+                                          )
+                                        ],
+                                        userDetails: [
+                                          UserDetail(
+                                              firstName: firstname,
+                                              lastName: lastname,
+                                              email: email,
+                                              mobile: mobile,
+                                              avatar: avatarurl!,
+                                              id: "649ebfb5b4a2118b5424694e")
+                                        ],
+                                        educationalDetails: [
+                                          EducationalDetail(
+                                              instituteName: institutename,
+                                              educationalDetailClass: classname,
+                                              id: "649ebfb5b4a2118b5424694e")
+                                        ],
+                                        tasks: [],
+                                        notes: [],
+                                        videoLecture: [],
+                                        // students: [],
+                                        v: 91,
+                                        sharedlectures: [],
+                                        sharednotes: [],
+                                        sharedtasks: [],
+                                      );
+                                      ///////String job = jobcontroller.text;
 
-                                  // ScaffoldMessenger.of(context)
-                                  //     .showSnackBar(snackBar);
-                                } else {
-                                  setState(() {
-                                    isloading = true;
-                                  });
-                                  await uploadavatar();
+                                      Teacher data = await submitdata(
+                                          teacherdata: teacherdata,
+                                          id: id,
+                                          context: context
 
-                                  String id = uid;
-                                  String firstname = fullname;
-                                  // String firstname = firstnamecontroller.text;
-                                  String lastname = emailid.split('@')[0];
-                                  String email = emailid;
-                                  // String email = emailcontroller.text;
-                                  String mobile = mobilecontroller.text;
-                                  String institutename =
-                                      instituteNamecontroller.text;
-                                  String classname = classcontroller.text;
+                                          ///////// createdOn: DateTime.now(),
+                                          ////////// updatedOn: DateTime.now());
+                                          );
 
-                                  Teacher teacherdata = Teacher(
-                                      id: id,
-                                      commons: [
-                                        Common(
-                                          createdOn: DateTime.parse(
-                                              "2023-06-30T09:00:00.000Z"),
-                                          updatedOn: DateTime.parse(
-                                              "2023-06-30T09:00:00.000Z"),
-                                          id: "649ebfb5b4a2118b5424694e",
-                                        )
-                                      ],
-                                      userDetails: [
-                                        UserDetail(
-                                            firstName: firstname,
-                                            lastName: lastname,
-                                            email: email,
-                                            mobile: mobile,
-                                            avatar: avatarurl!,
-                                            id: "649ebfb5b4a2118b5424694e")
-                                      ],
-                                      educationalDetails: [
-                                        EducationalDetail(
-                                            instituteName: institutename,
-                                            educationalDetailClass: classname,
-                                            id: "649ebfb5b4a2118b5424694e")
-                                      ],
-                                      tasks: [],
-                                      notes: [],
-                                      videoLecture: [],
-                                      students: [],
-                                      v: 91);
-                                  ///////String job = jobcontroller.text;
+                                      await FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(uid)
+                                          .update({
+                                        "filldetails": true,
+                                      });
 
-                                  Teacher data = await submitdata(
-                                      teacherdata: teacherdata,
-                                      id: id,
-                                      context: context
+                                      setState(() {
+                                        teacherdata = data;
+                                      });
 
-                                      ///////// createdOn: DateTime.now(),
-                                      ////////// updatedOn: DateTime.now());
+                                      setState(() {
+                                        isloading = false;
+                                      });
+
+                                      PersistentNavBarNavigator.pushNewScreen(
+                                        context,
+                                        screen: StudentScreen(),
+                                        withNavBar:
+                                            true, // OPTIONAL VALUE. True by default.
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.cupertino,
                                       );
 
-                                  await FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(uid)
-                                      .update({
-                                    "filldetails": true,
-                                  });
-
-                                  setState(() {
-                                    teacherdata = data;
-                                  });
-
-                                  setState(() {
-                                    isloading = false;
-                                  });
-
-                                  PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: StudentScreen(),
-                                    withNavBar:
-                                        true, // OPTIONAL VALUE. True by default.
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.cupertino,
-                                  );
-
-                                  // nextScreen(context, StudentScreen());
-                                }
-                              }
-                            },
-                          ),
+                                      // nextScreen(context, StudentScreen());
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  height: 61.h,
+                                  width: 267.w,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromRGBO(86, 103, 253, 1),
+                                    borderRadius: BorderRadius.circular(12.r),
+                                  ),
+                                  child: Center(
+                                    child: isloading
+                                        ? Container(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                                color: Colors.white),
+                                          )
+                                        : Text(
+                                            "Sign up",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 20.sp,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: "Exo",
+                                                color: Color.fromRGBO(
+                                                    255, 255, 255, 1)),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: TextFormField(
+                            //     controller: firstnamecontroller,
+                            //     decoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             width: 3,
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ), //<-- SEE HERE
+                            //         ),
+                            //         hintText: "Full Name"),
+                            //     validator: (val) {
+                            //       if (val!.length < 1) {
+                            //         return "Enter Full Name";
+                            //       } else {
+                            //         return null;
+                            //       }
+                            //     },
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: TextFormField(
+                            //     controller: lastnamecontroller,
+                            //     decoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             width: 3,
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ), //<-- SEE HERE
+                            //         ),
+                            //         hintText: "Last Name"),
+                            //     validator: (val) {
+                            //       if (val!.length < 1) {
+                            //         return "Enter Last Name";
+                            //       } else {
+                            //         return null;
+                            //       }
+                            //     },
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: TextFormField(
+                            //     controller: emailcontroller,
+                            //     decoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             width: 3,
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ), //<-- SEE HERE
+                            //         ),
+                            //         hintText: "Enter Email"),
+                            //     validator: (val) {
+                            //       if (val!.length < 1) {
+                            //         return "Enter Email";
+                            //       } else {
+                            //         return null;
+                            //       }
+                            //     },
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: TextFormField(
+                            //     keyboardType: TextInputType.number,
+                            //     controller: mobilecontroller,
+                            //     decoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             width: 3,
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ), //<-- SEE HERE
+                            //         ),
+                            //         hintText: "Enter Mobile number"),
+                            //     validator: (val) {
+                            //       if (val!.length < 1) {
+                            //         return "Enter Mobile Number";
+                            //       } else if (val.length != 10) {
+                            //         return "Please Enter 10 digit Mobile Number";
+                            //       } else {
+                            //         return null;
+                            //       }
+                            //     },
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: TextFormField(
+                            //     controller: instituteNamecontroller,
+                            //     decoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             width: 3,
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ), //<-- SEE HERE
+                            //         ),
+                            //         hintText: "Enter Institute Name"),
+                            //     validator: (val) {
+                            //       if (val!.length < 1) {
+                            //         return "Enter Institute Name";
+                            //       } else {
+                            //         return null;
+                            //       }
+                            //     },
+                            //   ),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.all(8.0),
+                            //   child: TextFormField(
+                            //     controller: classcontroller,
+                            //     decoration: InputDecoration(
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderSide: BorderSide(
+                            //             width: 3,
+                            //             color: Color.fromRGBO(86, 103, 253, 1),
+                            //           ), //<-- SEE HERE
+                            //         ),
+                            //         hintText: "Enter Profession "),
+                            //     validator: (val) {
+                            //       if (val!.length < 1) {
+                            //         return "Enter Profession ";
+                            //       } else {
+                            //         return null;
+                            //       }
+                            //     },
+                            //   ),
+                            // ),
+                          ],
                         ),
-                      ],
-                    ));
+                      ),
+
+                      // ElevatedButton(
+                      //     onPressed: () {
+                      //       getImage();
+                      //     },
+                      //     child: Text("get image")),
+                      // ElevatedButton(
+                      //     onPressed: () {
+                      //       uploadavatar();
+                      //     },
+                      //     child: Text("upload image")),
+                      // TextFormField(
+                      //   controller: jobcontroller,
+                      //   decoration: InputDecoration(
+                      //       border: OutlineInputBorder(
+                      //           // borderRadius: BorderRadius.circular(20),
+                      //           ),
+                      //       hintText: "job title"),
+                      // ),
+                      // ElevatedButton(
+                      //     onPressed: () async {
+                      //       await uploadavatar();
+
+                      //       String id = uid;
+                      //       String firstname = firstnamecontroller.text;
+                      //       String lastname = lastnamecontroller.text;
+                      //       String email = emailcontroller.text;
+                      //       String mobile = mobilecontroller.text;
+                      //       String institutename = instituteNamecontroller.text;
+                      //       String classname = classcontroller.text;
+
+                      //       Teacher teacherdata = Teacher(
+                      //           id: id,
+                      //           commons: [
+                      //             Common(
+                      //               createdOn:
+                      //                   DateTime.parse("2023-06-30T09:00:00.000Z"),
+                      //               updatedOn:
+                      //                   DateTime.parse("2023-06-30T09:00:00.000Z"),
+                      //               id: "649ebfb5b4a2118b5424694e",
+                      //             )
+                      //           ],
+                      //           userDetails: [
+                      //             UserDetail(
+                      //                 firstName: firstname,
+                      //                 lastName: lastname,
+                      //                 email: email,
+                      //                 mobile: mobile,
+                      //                 avatar: avatarurl!,
+                      //                 id: "649ebfb5b4a2118b5424694e")
+                      //           ],
+                      //           educationalDetails: [
+                      //             EducationalDetail(
+                      //                 instituteName: institutename,
+                      //                 educationalDetailClass: classname,
+                      //                 id: "649ebfb5b4a2118b5424694e")
+                      //           ],
+                      //           tasks: [],
+                      //           notes: [],
+                      //           videoLecture: [],
+                      //           students: [],
+                      //           v: 91);
+                      //       ///////String job = jobcontroller.text;
+
+                      //       Teacher data = await submitdata(
+                      //           teacherdata: teacherdata, id: id, context: context
+
+                      //           ///////// createdOn: DateTime.now(),
+                      //           ////////// updatedOn: DateTime.now());
+                      //           );
+
+                      //       await FirebaseFirestore.instance
+                      //           .collection("users")
+                      //           .doc(uid)
+                      //           .update({
+                      //         "filldetails": true,
+                      //       });
+
+                      //       setState(() {
+                      //         teacherdata = data;
+                      //       });
+
+                      //       nextScreen(context, StudentScreen());
+                      //     },
+                      //     child: Text("Submit",  )),
+
+                      // SizedBox(
+                      //   width: 200,
+                      //   child: ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //         primary: Color.fromRGBO(86, 103, 253, 1),
+                      //         elevation: 0,
+                      //         shape: RoundedRectangleBorder(
+                      //             borderRadius: BorderRadius.circular(30))),
+                      //     child: isloading
+                      //         ? Container(
+                      //             height: 20,
+                      //             width: 20,
+                      //             child: CircularProgressIndicator(
+                      //                 color: Colors.white),
+                      //           )
+                      //         : Text(
+                      //             "Submit",
+                      //             style: TextStyle(
+                      //                 color: Colors.white, fontSize: 16),
+                      //           ),
+                      //     onPressed: () async {
+                      //       // for makeing optional image
+                      //       if (formKey.currentState!.validate()) {
+                      //         print(isuploaded);
+                      //         if (isuploaded == false) {
+                      //           avatarurl =
+                      //               "https://firebasestorage.googleapis.com/v0/b/easyed-9df02.appspot.com/o/UserAvatarImages%2Faccount.png?alt=media&token=63577669-1e6e-4291-aca0-427354ef3b79";
+
+                      //           setState(() {
+                      //             isloading = true;
+                      //           });
+
+                      //           String id = uid;
+                      //           // String id = uid;
+                      //           String firstname = fullname;
+                      //           // String firstname = firstnamecontroller.text;
+                      //           String lastname = emailid.split('@')[0];
+                      //           String email = emailid;
+                      //           // String email = emailcontroller.text;
+                      //           String mobile = mobilecontroller.text;
+                      //           String institutename =
+                      //               instituteNamecontroller.text;
+                      //           String classname = classcontroller.text;
+
+                      //           Teacher teacherdata = Teacher(
+                      //             id: id,
+                      //             commons: [
+                      //               Common(
+                      //                 createdOn: DateTime.parse(
+                      //                     "2023-06-30T09:00:00.000Z"),
+                      //                 updatedOn: DateTime.parse(
+                      //                     "2023-06-30T09:00:00.000Z"),
+                      //                 id: "649ebfb5b4a2118b5424694e",
+                      //               )
+                      //             ],
+                      //             userDetails: [
+                      //               UserDetail(
+                      //                   firstName: firstname,
+                      //                   lastName: lastname,
+                      //                   email: email,
+                      //                   mobile: mobile,
+                      //                   avatar: avatarurl!,
+                      //                   id: "649ebfb5b4a2118b5424694e")
+                      //             ],
+                      //             educationalDetails: [
+                      //               EducationalDetail(
+                      //                   instituteName: institutename,
+                      //                   educationalDetailClass: classname,
+                      //                   id: "649ebfb5b4a2118b5424694e")
+                      //             ],
+                      //             tasks: [],
+                      //             notes: [],
+                      //             videoLecture: [],
+                      //             // students: [],
+                      //             v: 0,
+                      //             sharedlectures: [],
+                      //             sharednotes: [],
+                      //             sharedtasks: [],
+                      //           );
+                      //           ///////String job = jobcontroller.text;
+
+                      //           Teacher data = await submitdata(
+                      //               teacherdata: teacherdata,
+                      //               id: id,
+                      //               context: context
+
+                      //               ///////// createdOn: DateTime.now(),
+                      //               ////////// updatedOn: DateTime.now());
+                      //               );
+
+                      //           await FirebaseFirestore.instance
+                      //               .collection("users")
+                      //               .doc(uid)
+                      //               .update({
+                      //             "filldetails": true,
+                      //           });
+
+                      //           setState(() {
+                      //             teacherdata = data;
+                      //           });
+
+                      //           setState(() {
+                      //             isloading = false;
+                      //           });
+
+                      //           PersistentNavBarNavigator.pushNewScreen(
+                      //             context,
+                      //             screen: StudentScreen(),
+                      //             withNavBar:
+                      //                 true, // OPTIONAL VALUE. True by default.
+                      //             pageTransitionAnimation:
+                      //                 PageTransitionAnimation.cupertino,
+                      //           );
+
+                      //           // nextScreen(context, StudentScreen());
+                      //           // final snackBar = SnackBar(
+                      //           //   backgroundColor: Colors.red,
+                      //           //   duration: Duration(seconds: 1),
+                      //           //   dismissDirection: DismissDirection.horizontal,
+                      //           //   content: const Text(
+                      //           //     'Please upload the Profile Picture.',
+                      //           //     style: TextStyle(),
+                      //           //   ),
+                      //           // );
+                      //           // ScaffoldMessenger.of(context)
+                      //           //     .hideCurrentSnackBar();
+
+                      //           // ScaffoldMessenger.of(context)
+                      //           //     .showSnackBar(snackBar);
+                      //         } else {
+                      //           setState(() {
+                      //             isloading = true;
+                      //           });
+                      //           await uploadavatar();
+
+                      //           globalsplitusername = emailid.split('@')[0];
+
+                      //           String id = globalsplitusername!;
+                      //           String firstname = fullname;
+                      //           // String firstname = firstnamecontroller.text;
+                      //           String lastname = emailid.split('@')[0];
+                      //           String email = emailid;
+                      //           // String email = emailcontroller.text;
+                      //           String mobile = mobilecontroller.text;
+                      //           String institutename =
+                      //               instituteNamecontroller.text;
+                      //           String classname = classcontroller.text;
+
+                      //           Teacher teacherdata = Teacher(
+                      //             id: id,
+                      //             commons: [
+                      //               Common(
+                      //                 createdOn: DateTime.parse(
+                      //                     "2023-06-30T09:00:00.000Z"),
+                      //                 updatedOn: DateTime.parse(
+                      //                     "2023-06-30T09:00:00.000Z"),
+                      //                 id: "649ebfb5b4a2118b5424694e",
+                      //               )
+                      //             ],
+                      //             userDetails: [
+                      //               UserDetail(
+                      //                   firstName: firstname,
+                      //                   lastName: lastname,
+                      //                   email: email,
+                      //                   mobile: mobile,
+                      //                   avatar: avatarurl!,
+                      //                   id: "649ebfb5b4a2118b5424694e")
+                      //             ],
+                      //             educationalDetails: [
+                      //               EducationalDetail(
+                      //                   instituteName: institutename,
+                      //                   educationalDetailClass: classname,
+                      //                   id: "649ebfb5b4a2118b5424694e")
+                      //             ],
+                      //             tasks: [],
+                      //             notes: [],
+                      //             videoLecture: [],
+                      //             // students: [],
+                      //             v: 91,
+                      //             sharedlectures: [],
+                      //             sharednotes: [],
+                      //             sharedtasks: [],
+                      //           );
+                      //           ///////String job = jobcontroller.text;
+
+                      //           Teacher data = await submitdata(
+                      //               teacherdata: teacherdata,
+                      //               id: id,
+                      //               context: context
+
+                      //               ///////// createdOn: DateTime.now(),
+                      //               ////////// updatedOn: DateTime.now());
+                      //               );
+
+                      //           await FirebaseFirestore.instance
+                      //               .collection("users")
+                      //               .doc(uid)
+                      //               .update({
+                      //             "filldetails": true,
+                      //           });
+
+                      //           setState(() {
+                      //             teacherdata = data;
+                      //           });
+
+                      //           setState(() {
+                      //             isloading = false;
+                      //           });
+
+                      //           PersistentNavBarNavigator.pushNewScreen(
+                      //             context,
+                      //             screen: StudentScreen(),
+                      //             withNavBar:
+                      //                 true, // OPTIONAL VALUE. True by default.
+                      //             pageTransitionAnimation:
+                      //                 PageTransitionAnimation.cupertino,
+                      //           );
+
+                      //           // nextScreen(context, StudentScreen());
+                      //         }
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ));
               }),
         ),
       ),
